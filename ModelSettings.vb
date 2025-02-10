@@ -191,6 +191,20 @@ Public Class ModelSettings
     Public Property AverageUAudTime As Double = 15
 
     ''' <summary>
+    ''' The average time it takes for the personnel to store and print results of the UAud
+    ''' </summary>
+    ''' <returns></returns>
+    <PropertyDescription("The average time it takes for the personnel  to store and print results of the UAud")>
+    Public Property UAudPostAdminTime As Double = 1
+
+    ''' <summary>
+    ''' The standard deviation of the UAudPostAdminTime 
+    ''' </summary>
+    ''' <returns></returns>
+    <PropertyDescription("The standard deviation of the UAudPostAdminTime ")>
+    Public Property SdUAudPostAdminTime As Double = 0.5
+
+    ''' <summary>
     ''' The standard deviation (in minutes of the average time for user operated PTA
     ''' </summary>
     ''' <returns></returns>
@@ -210,6 +224,7 @@ Public Class ModelSettings
     ''' <returns></returns>
     <PropertyDescription("The standard deviation of the UAudEvaluationTime ")>
     Public Property SdUAudEvaluationTime As Double = 0.5
+
 
     ''' <summary>
     ''' The proportion of patients that need to take manual PTA after UAud

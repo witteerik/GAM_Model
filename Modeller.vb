@@ -663,14 +663,36 @@ Public Class Modeller
 
                     Case PatientActivity.PatientActivityTypes.AHM
 
-                        'UAud is completed, placing in queue for UAud evaluation
+                        'UAud is completed,
+                        'Checking the availabilty of a personnel that can perform post measuement actions such as save and print results and direct the patient to the queue for UAud evaluation
 
-                        Dim AvailabilityCheckResult = AvailablePlaceRequest(GamSpaceTypes.Kö_AHM_utvärdering)
+                        Dim AvailabilityCheckResult = AvailablePlaceAndPersonnelRequest(GamSpaceTypes.Kö_AHM_utvärdering, PersonnelType.Any)
                         If AvailabilityCheckResult IsNot Nothing Then
 
-                            'UAud is finished, placing the patient in queue for councelling
+                            'UAud is finished, patient is placed in the queue for AHM quality evaluation
                             Patient.ActivityList.Add(New PatientActivity With {.ActivityType = PatientActivity.PatientActivityTypes.Kö_AHM_kvalitetsbedömning, .StartTime = CurrentTime})
-                            MyAudiologyReception.MovePersonToSpace(Patient, AvailabilityCheckResult)
+                            MyAudiologyReception.MovePersonToSpace(Patient, AvailabilityCheckResult.Item1)
+
+
+
+                            'UAud is finished, performing post measurment administrative tasks
+                            Dim Personnel = AvailabilityCheckResult.Item2
+                            Dim Duration = RandomizePatientActivityDuration(PatientActivity.PatientActivityTypes.AHM_Avslut)
+
+                            'Timing the last task by setting it's duration
+                            If Personnel.GetCurrentTask.HasDurationValue = False Then
+                                Personnel.GetCurrentTask.Duration = CurrentTime - Personnel.GetCurrentTask.StartTime
+                            End If
+
+                            Personnel.TaskList.Add(New PersonnelTask With {.TaskType = PersonnelTask.PersonnelTaskTypes.AHM_Avslut, .StartTime = CurrentTime, .Duration = Duration, .HasDurationValue = True})
+
+                            'Moving the personnel to the personnel space (where the printer is supposedly located)
+                            Dim DeskSpaceCheck = AvailablePlaceRequest(GamSpaceTypes.Personalyta)
+                            If DeskSpaceCheck IsNot Nothing Then
+                                MyAudiologyReception.MovePersonToSpace(AvailabilityCheckResult.Item2, DeskSpaceCheck)
+                            Else
+                                Throw New Exception("No available space. The model requires that personnel can always move to space type Personalyta.")
+                            End If
 
                         End If
 
@@ -813,6 +835,9 @@ Public Class Modeller
             Case PatientActivity.PatientActivityTypes.Enkät
 
                 Throw New Exception("Questionnaries not yet implemented")
+
+            Case PatientActivity.PatientActivityTypes.AHM_Avslut
+                Return TimeSpan.FromMinutes(Math.Max(0.1, MathNet.Numerics.Distributions.Normal.Sample(CurrentModelSettings.UAudPostAdminTime, CurrentModelSettings.SdUAudPostAdminTime)))
 
             Case PatientActivity.PatientActivityTypes.AHM_kvalitetsbedömning
                 Return TimeSpan.FromMinutes(Math.Max(0.1, MathNet.Numerics.Distributions.Normal.Sample(CurrentModelSettings.UAudEvaluationTime, CurrentModelSettings.SdUAudEvaluationTime)))

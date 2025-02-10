@@ -41,14 +41,15 @@ Public Class PatientActivity
         Intervju = 1
         Kö_AHM = 2
         AHM = 3
-        Kö_AHM_kvalitetsbedömning = 4
-        AHM_kvalitetsbedömning = 5
-        Kö_rådgivning = 6
-        Rådgivning = 7
-        Kö_MHM = 8
-        MHM = 9
-        Enkät = 10
-        Hemgång = 11
+        AHM_Avslut = 4
+        Kö_AHM_kvalitetsbedömning = 5
+        AHM_kvalitetsbedömning = 6
+        Kö_rådgivning = 7
+        Rådgivning = 8
+        Kö_MHM = 9
+        MHM = 10
+        Enkät = 11
+        Hemgång = 12
     End Enum
 
 End Class
@@ -63,11 +64,12 @@ Public Class PersonnelTask
         Intervju = 1
         Rengöring = 2
         AHM_Start = 3 ' This includes helping the patient get started with UAud, and possibly instructions
-        AHM_kvalitetsbedömning = 4
-        MHM = 5
-        Rådgivning = 6
-        Journal = 7
-        Rast = 8
+        AHM_Avslut = 4 ' This may include aving and printing the test results (optimally this should be fully atomatized)
+        AHM_kvalitetsbedömning = 5
+        MHM = 6
+        Rådgivning = 7
+        Journal = 8
+        Rast = 9
     End Enum
 
 End Class

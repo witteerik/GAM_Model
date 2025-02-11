@@ -153,7 +153,7 @@ Public MustInherit Class Personnel
 
     End Function
 
-    Private _TaskList As New List(Of PersonnelTask) From {New PersonnelTask With {.TaskType = PersonnelTask.PersonnelTaskTypes.Tillgänglig}}
+    Protected _TaskList As New List(Of PersonnelTask) From {New PersonnelTask With {.TaskType = PersonnelTask.PersonnelTaskTypes.Tillgänglig}}
     Public Property TaskList As List(Of PersonnelTask)
         Get
             Return _TaskList
@@ -166,6 +166,8 @@ Public MustInherit Class Personnel
 
     Public Function GetCurrentTask() As PersonnelTask
 
+        Me.Invalidate()
+
         If _TaskList.Any Then
             Return _TaskList.Last
         Else
@@ -173,20 +175,6 @@ Public MustInherit Class Personnel
         End If
 
     End Function
-
-
-    Public Sub Me_Invalidated() Handles Me.Invalidated
-
-        Dim CurrentTask As PersonnelTask = GetCurrentTask()
-        If CurrentTask IsNot Nothing Then
-            If CurrentTask.TaskType = PersonnelTask.PersonnelTaskTypes.Tillgänglig Then
-                Me.BackColor = Color.Lime
-            Else
-                Me.BackColor = Color.LightGreen
-            End If
-        End If
-
-    End Sub
 
     Public Sub ExtraPaint(sender As Object, e As System.Windows.Forms.PaintEventArgs) Handles Me.Paint
 
@@ -220,6 +208,19 @@ Public Class Audiologist
 
     End Sub
 
+    Public Sub Me_Invalidated() Handles Me.Invalidated
+
+        If _TaskList.Any Then
+            If _TaskList.Last.TaskType = PersonnelTask.PersonnelTaskTypes.Tillgänglig Then
+                Me.BackColor = Color.Lime
+            Else
+                Me.BackColor = Color.LightGreen
+            End If
+        End If
+
+    End Sub
+
+
     Public Shadows Function ToString()
         Return "A" & ID.ToString()
     End Function
@@ -238,6 +239,18 @@ Public Class AudiologyAssistant
 
         'Setting the text property for the GUI
         Me.Text = Me.ToString
+
+    End Sub
+
+    Public Sub Me_Invalidated() Handles Me.Invalidated
+
+        If _TaskList.Any Then
+            If _TaskList.Last.TaskType = PersonnelTask.PersonnelTaskTypes.Tillgänglig Then
+                Me.BackColor = Color.LightSkyBlue
+            Else
+                Me.BackColor = Color.LightBlue
+            End If
+        End If
 
     End Sub
 

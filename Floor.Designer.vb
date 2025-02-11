@@ -814,7 +814,7 @@ Partial Class Floor
         GamPlace2.NeedsCleaning = False
         GamPlace2.Size = New Size(150, 143)
         GamPlace2.SpaceName = ""
-        GamPlace2.SpaceType = GamSpaceTypes.Kö_AHM_utvärdering
+        GamPlace2.SpaceType = GamSpaceTypes.Kö_AHM_kvalitetsbedömning
         GamPlace2.TabIndex = 96
         ' 
         ' GamPlace3

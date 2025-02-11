@@ -96,10 +96,12 @@
 
         Dim AllGamPlaces = GetAllGamSpaces()
         For Each GamSpace In AllGamPlaces
-            If GamSpace.Controls.Count = 0 Then
-                GamSpace.VoidTicks += 1
-            Else
-                GamSpace.UseTicks += 1
+            If GamSpace.IsClosed = False Then
+                If GamSpace.Controls.Count = 0 Then
+                    GamSpace.VoidTicks += 1
+                Else
+                    GamSpace.UseTicks += 1
+                End If
             End If
         Next
 

@@ -23,10 +23,7 @@ Partial Class GAM_0_1
     <System.Diagnostics.DebuggerStepThrough()> _
     Private Sub InitializeComponent()
         MyAudiologyReception = New AudiologyReception()
-        HorizontalWall12 = New HorizontalWall()
-        HorizontalWall11 = New HorizontalWall()
-        HorizontalWall9 = New HorizontalWall()
-        HorizontalWall6 = New HorizontalWall()
+        GamSpace19 = New GamSpace()
         Table2 = New Table()
         GamSpace18 = New GamSpace()
         GamSpace17 = New GamSpace()
@@ -60,17 +57,30 @@ Partial Class GAM_0_1
         Table1 = New Table()
         HorizontalWall1 = New HorizontalWall()
         VerticalWall1 = New VerticalWall()
-        GamSpace19 = New GamSpace()
+        HorizontalWall6 = New HorizontalWall()
+        HorizontalWall9 = New HorizontalWall()
+        HorizontalWall12 = New HorizontalWall()
+        Table3 = New Table()
+        Table4 = New Table()
+        Table5 = New Table()
+        Table6 = New Table()
+        Table7 = New Table()
+        Table8 = New Table()
         MyAudiologyReception.SuspendLayout()
         SuspendLayout()
         ' 
         ' MyAudiologyReception
         ' 
-        MyAudiologyReception.Controls.Add(GamSpace19)
+        MyAudiologyReception.Controls.Add(Table8)
+        MyAudiologyReception.Controls.Add(Table7)
+        MyAudiologyReception.Controls.Add(Table6)
+        MyAudiologyReception.Controls.Add(Table5)
+        MyAudiologyReception.Controls.Add(Table4)
+        MyAudiologyReception.Controls.Add(Table3)
         MyAudiologyReception.Controls.Add(HorizontalWall12)
-        MyAudiologyReception.Controls.Add(HorizontalWall11)
         MyAudiologyReception.Controls.Add(HorizontalWall9)
         MyAudiologyReception.Controls.Add(HorizontalWall6)
+        MyAudiologyReception.Controls.Add(GamSpace19)
         MyAudiologyReception.Controls.Add(Table2)
         MyAudiologyReception.Controls.Add(GamSpace18)
         MyAudiologyReception.Controls.Add(GamSpace17)
@@ -110,37 +120,19 @@ Partial Class GAM_0_1
         MyAudiologyReception.Size = New Size(1357, 772)
         MyAudiologyReception.TabIndex = 0
         ' 
-        ' HorizontalWall12
+        ' GamSpace19
         ' 
-        HorizontalWall12.BackColor = Color.DarkSlateGray
-        HorizontalWall12.Location = New Point(491, 129)
-        HorizontalWall12.Name = "HorizontalWall12"
-        HorizontalWall12.Size = New Size(62, 5)
-        HorizontalWall12.TabIndex = 43
-        ' 
-        ' HorizontalWall11
-        ' 
-        HorizontalWall11.BackColor = Color.DarkSlateGray
-        HorizontalWall11.Location = New Point(758, 393)
-        HorizontalWall11.Name = "HorizontalWall11"
-        HorizontalWall11.Size = New Size(62, 5)
-        HorizontalWall11.TabIndex = 42
-        ' 
-        ' HorizontalWall9
-        ' 
-        HorizontalWall9.BackColor = Color.DarkSlateGray
-        HorizontalWall9.Location = New Point(770, 129)
-        HorizontalWall9.Name = "HorizontalWall9"
-        HorizontalWall9.Size = New Size(62, 5)
-        HorizontalWall9.TabIndex = 41
-        ' 
-        ' HorizontalWall6
-        ' 
-        HorizontalWall6.BackColor = Color.DarkSlateGray
-        HorizontalWall6.Location = New Point(633, 129)
-        HorizontalWall6.Name = "HorizontalWall6"
-        HorizontalWall6.Size = New Size(62, 5)
-        HorizontalWall6.TabIndex = 40
+        GamSpace19.BorderStyle = BorderStyle.FixedSingle
+        GamSpace19.IsClosed = False
+        GamSpace19.Location = New Point(531, 12)
+        GamSpace19.Name = "GamSpace19"
+        GamSpace19.NeedsCleaning = False
+        GamSpace19.Size = New Size(178, 57)
+        GamSpace19.SpaceName = ""
+        GamSpace19.SpaceType = GamSpaceTypes.Kö_MHM
+        GamSpace19.TabIndex = 44
+        GamSpace19.UseTicks = 0L
+        GamSpace19.VoidTicks = 0L
         ' 
         ' Table2
         ' 
@@ -224,10 +216,10 @@ Partial Class GAM_0_1
         ' 
         GamSpace14.BorderStyle = BorderStyle.FixedSingle
         GamSpace14.IsClosed = False
-        GamSpace14.Location = New Point(543, 618)
+        GamSpace14.Location = New Point(843, 159)
         GamSpace14.Name = "GamSpace14"
         GamSpace14.NeedsCleaning = False
-        GamSpace14.Size = New Size(120, 111)
+        GamSpace14.Size = New Size(69, 179)
         GamSpace14.SpaceName = ""
         GamSpace14.SpaceType = GamSpaceTypes.Kö_Rådgivning
         GamSpace14.TabIndex = 31
@@ -238,12 +230,12 @@ Partial Class GAM_0_1
         ' 
         GamSpace13.BorderStyle = BorderStyle.FixedSingle
         GamSpace13.IsClosed = False
-        GamSpace13.Location = New Point(405, 618)
+        GamSpace13.Location = New Point(219, 12)
         GamSpace13.Name = "GamSpace13"
         GamSpace13.NeedsCleaning = False
-        GamSpace13.Size = New Size(120, 111)
+        GamSpace13.Size = New Size(180, 57)
         GamSpace13.SpaceName = ""
-        GamSpace13.SpaceType = GamSpaceTypes.Kö_AHM_utvärdering
+        GamSpace13.SpaceType = GamSpaceTypes.Kö_AHM_kvalitetsbedömning
         GamSpace13.TabIndex = 30
         GamSpace13.UseTicks = 0L
         GamSpace13.VoidTicks = 0L
@@ -252,10 +244,10 @@ Partial Class GAM_0_1
         ' 
         GamSpace12.BorderStyle = BorderStyle.FixedSingle
         GamSpace12.IsClosed = False
-        GamSpace12.Location = New Point(269, 618)
+        GamSpace12.Location = New Point(219, 663)
         GamSpace12.Name = "GamSpace12"
         GamSpace12.NeedsCleaning = False
-        GamSpace12.Size = New Size(120, 111)
+        GamSpace12.Size = New Size(306, 74)
         GamSpace12.SpaceName = ""
         GamSpace12.SpaceType = GamSpaceTypes.Kö_AHM
         GamSpace12.TabIndex = 29
@@ -265,15 +257,15 @@ Partial Class GAM_0_1
         ' VerticalWall6
         ' 
         VerticalWall6.BackColor = Color.DarkSlateGray
-        VerticalWall6.Location = New Point(758, 272)
+        VerticalWall6.Location = New Point(781, 78)
         VerticalWall6.Name = "VerticalWall6"
-        VerticalWall6.Size = New Size(5, 122)
+        VerticalWall6.Size = New Size(5, 56)
         VerticalWall6.TabIndex = 28
         ' 
         ' GamSpace11
         ' 
         GamSpace11.IsClosed = False
-        GamSpace11.Location = New Point(769, 279)
+        GamSpace11.Location = New Point(792, 12)
         GamSpace11.Name = "GamSpace11"
         GamSpace11.NeedsCleaning = False
         GamSpace11.Size = New Size(120, 111)
@@ -286,7 +278,7 @@ Partial Class GAM_0_1
         ' GamSpace10
         ' 
         GamSpace10.IsClosed = False
-        GamSpace10.Location = New Point(781, 12)
+        GamSpace10.Location = New Point(792, 622)
         GamSpace10.Name = "GamSpace10"
         GamSpace10.NeedsCleaning = False
         GamSpace10.Size = New Size(120, 111)
@@ -299,7 +291,7 @@ Partial Class GAM_0_1
         ' GamSpace9
         ' 
         GamSpace9.IsClosed = False
-        GamSpace9.Location = New Point(644, 12)
+        GamSpace9.Location = New Point(792, 494)
         GamSpace9.Name = "GamSpace9"
         GamSpace9.NeedsCleaning = False
         GamSpace9.Size = New Size(120, 111)
@@ -312,23 +304,23 @@ Partial Class GAM_0_1
         ' VerticalWall4
         ' 
         VerticalWall4.BackColor = Color.DarkSlateGray
-        VerticalWall4.Location = New Point(633, 12)
+        VerticalWall4.Location = New Point(784, 483)
         VerticalWall4.Name = "VerticalWall4"
-        VerticalWall4.Size = New Size(5, 122)
+        VerticalWall4.Size = New Size(5, 56)
         VerticalWall4.TabIndex = 23
         ' 
         ' VerticalWall3
         ' 
         VerticalWall3.BackColor = Color.DarkSlateGray
-        VerticalWall3.Location = New Point(770, 12)
+        VerticalWall3.Location = New Point(784, 358)
         VerticalWall3.Name = "VerticalWall3"
-        VerticalWall3.Size = New Size(5, 122)
+        VerticalWall3.Size = New Size(5, 56)
         VerticalWall3.TabIndex = 22
         ' 
         ' GamSpace8
         ' 
         GamSpace8.IsClosed = False
-        GamSpace8.Location = New Point(507, 12)
+        GamSpace8.Location = New Point(792, 366)
         GamSpace8.Name = "GamSpace8"
         GamSpace8.NeedsCleaning = False
         GamSpace8.Size = New Size(120, 111)
@@ -349,9 +341,9 @@ Partial Class GAM_0_1
         ' HorizontalWall7
         ' 
         HorizontalWall7.BackColor = Color.DarkSlateGray
-        HorizontalWall7.Location = New Point(758, 268)
+        HorizontalWall7.Location = New Point(784, 611)
         HorizontalWall7.Name = "HorizontalWall7"
-        HorizontalWall7.Size = New Size(139, 5)
+        HorizontalWall7.Size = New Size(128, 5)
         HorizontalWall7.TabIndex = 17
         ' 
         ' HorizontalWall5
@@ -389,10 +381,10 @@ Partial Class GAM_0_1
         ' GamSpace7
         ' 
         GamSpace7.IsClosed = False
-        GamSpace7.Location = New Point(12, 170)
+        GamSpace7.Location = New Point(48, 170)
         GamSpace7.Name = "GamSpace7"
         GamSpace7.NeedsCleaning = False
-        GamSpace7.Size = New Size(139, 96)
+        GamSpace7.Size = New Size(103, 96)
         GamSpace7.SpaceName = ""
         GamSpace7.SpaceType = GamSpaceTypes.AHM
         GamSpace7.TabIndex = 11
@@ -402,10 +394,10 @@ Partial Class GAM_0_1
         ' GamSpace6
         ' 
         GamSpace6.IsClosed = False
-        GamSpace6.Location = New Point(12, 283)
+        GamSpace6.Location = New Point(48, 283)
         GamSpace6.Name = "GamSpace6"
         GamSpace6.NeedsCleaning = False
-        GamSpace6.Size = New Size(139, 96)
+        GamSpace6.Size = New Size(103, 96)
         GamSpace6.SpaceName = ""
         GamSpace6.SpaceType = GamSpaceTypes.AHM
         GamSpace6.TabIndex = 10
@@ -415,10 +407,10 @@ Partial Class GAM_0_1
         ' GamSpace5
         ' 
         GamSpace5.IsClosed = False
-        GamSpace5.Location = New Point(12, 396)
+        GamSpace5.Location = New Point(48, 396)
         GamSpace5.Name = "GamSpace5"
         GamSpace5.NeedsCleaning = False
-        GamSpace5.Size = New Size(139, 96)
+        GamSpace5.Size = New Size(103, 96)
         GamSpace5.SpaceName = ""
         GamSpace5.SpaceType = GamSpaceTypes.AHM
         GamSpace5.TabIndex = 9
@@ -428,10 +420,10 @@ Partial Class GAM_0_1
         ' GamSpace4
         ' 
         GamSpace4.IsClosed = False
-        GamSpace4.Location = New Point(12, 509)
+        GamSpace4.Location = New Point(48, 509)
         GamSpace4.Name = "GamSpace4"
         GamSpace4.NeedsCleaning = False
-        GamSpace4.Size = New Size(139, 96)
+        GamSpace4.Size = New Size(103, 96)
         GamSpace4.SpaceName = ""
         GamSpace4.SpaceType = GamSpaceTypes.AHM
         GamSpace4.TabIndex = 8
@@ -441,10 +433,10 @@ Partial Class GAM_0_1
         ' GamSpace3
         ' 
         GamSpace3.IsClosed = False
-        GamSpace3.Location = New Point(12, 622)
+        GamSpace3.Location = New Point(48, 622)
         GamSpace3.Name = "GamSpace3"
         GamSpace3.NeedsCleaning = False
-        GamSpace3.Size = New Size(139, 96)
+        GamSpace3.Size = New Size(103, 96)
         GamSpace3.SpaceName = ""
         GamSpace3.SpaceType = GamSpaceTypes.AHM
         GamSpace3.TabIndex = 7
@@ -453,11 +445,12 @@ Partial Class GAM_0_1
         ' 
         ' GamSpace2
         ' 
+        GamSpace2.AutoSizeMode = AutoSizeMode.GrowAndShrink
         GamSpace2.IsClosed = False
-        GamSpace2.Location = New Point(12, 57)
+        GamSpace2.Location = New Point(48, 57)
         GamSpace2.Name = "GamSpace2"
         GamSpace2.NeedsCleaning = False
-        GamSpace2.Size = New Size(139, 96)
+        GamSpace2.Size = New Size(103, 96)
         GamSpace2.SpaceName = ""
         GamSpace2.SpaceType = GamSpaceTypes.AHM
         GamSpace2.TabIndex = 6
@@ -497,23 +490,82 @@ Partial Class GAM_0_1
         ' VerticalWall1
         ' 
         VerticalWall1.BackColor = Color.DarkSlateGray
-        VerticalWall1.Location = New Point(491, 12)
+        VerticalWall1.Location = New Point(784, 614)
         VerticalWall1.Name = "VerticalWall1"
-        VerticalWall1.Size = New Size(5, 122)
+        VerticalWall1.Size = New Size(5, 56)
         VerticalWall1.TabIndex = 2
         ' 
-        ' GamSpace19
+        ' HorizontalWall6
         ' 
-        GamSpace19.IsClosed = False
-        GamSpace19.Location = New Point(792, 498)
-        GamSpace19.Name = "GamSpace19"
-        GamSpace19.NeedsCleaning = False
-        GamSpace19.Size = New Size(120, 179)
-        GamSpace19.SpaceName = ""
-        GamSpace19.SpaceType = GamSpaceTypes.Kö_MHM
-        GamSpace19.TabIndex = 44
-        GamSpace19.UseTicks = 0L
-        GamSpace19.VoidTicks = 0L
+        HorizontalWall6.BackColor = Color.DarkSlateGray
+        HorizontalWall6.Location = New Point(784, 483)
+        HorizontalWall6.Name = "HorizontalWall6"
+        HorizontalWall6.Size = New Size(128, 5)
+        HorizontalWall6.TabIndex = 45
+        ' 
+        ' HorizontalWall9
+        ' 
+        HorizontalWall9.BackColor = Color.DarkSlateGray
+        HorizontalWall9.Location = New Point(784, 355)
+        HorizontalWall9.Name = "HorizontalWall9"
+        HorizontalWall9.Size = New Size(128, 5)
+        HorizontalWall9.TabIndex = 46
+        ' 
+        ' HorizontalWall12
+        ' 
+        HorizontalWall12.BackColor = Color.DarkSlateGray
+        HorizontalWall12.Location = New Point(784, 129)
+        HorizontalWall12.Name = "HorizontalWall12"
+        HorizontalWall12.Size = New Size(128, 5)
+        HorizontalWall12.TabIndex = 47
+        ' 
+        ' Table3
+        ' 
+        Table3.BackColor = Color.FromArgb(CByte(255), CByte(224), CByte(192))
+        Table3.Location = New Point(12, 622)
+        Table3.Name = "Table3"
+        Table3.Size = New Size(33, 96)
+        Table3.TabIndex = 48
+        ' 
+        ' Table4
+        ' 
+        Table4.BackColor = Color.FromArgb(CByte(255), CByte(224), CByte(192))
+        Table4.Location = New Point(12, 509)
+        Table4.Name = "Table4"
+        Table4.Size = New Size(33, 96)
+        Table4.TabIndex = 49
+        ' 
+        ' Table5
+        ' 
+        Table5.BackColor = Color.FromArgb(CByte(255), CByte(224), CByte(192))
+        Table5.Location = New Point(12, 396)
+        Table5.Name = "Table5"
+        Table5.Size = New Size(33, 96)
+        Table5.TabIndex = 50
+        ' 
+        ' Table6
+        ' 
+        Table6.BackColor = Color.FromArgb(CByte(255), CByte(224), CByte(192))
+        Table6.Location = New Point(12, 283)
+        Table6.Name = "Table6"
+        Table6.Size = New Size(33, 96)
+        Table6.TabIndex = 51
+        ' 
+        ' Table7
+        ' 
+        Table7.BackColor = Color.FromArgb(CByte(255), CByte(224), CByte(192))
+        Table7.Location = New Point(12, 170)
+        Table7.Name = "Table7"
+        Table7.Size = New Size(33, 96)
+        Table7.TabIndex = 52
+        ' 
+        ' Table8
+        ' 
+        Table8.BackColor = Color.FromArgb(CByte(255), CByte(224), CByte(192))
+        Table8.Location = New Point(12, 57)
+        Table8.Name = "Table8"
+        Table8.Size = New Size(33, 96)
+        Table8.TabIndex = 53
         ' 
         ' GAM_0_1
         ' 
@@ -562,9 +614,14 @@ Partial Class GAM_0_1
     Friend WithEvents GamSpace17 As GamSpace
     Friend WithEvents GamSpace18 As GamSpace
     Friend WithEvents Table2 As Table
-    Friend WithEvents HorizontalWall12 As HorizontalWall
-    Friend WithEvents HorizontalWall11 As HorizontalWall
+    Friend WithEvents GamSpace19 As GamSpace
     Friend WithEvents HorizontalWall9 As HorizontalWall
     Friend WithEvents HorizontalWall6 As HorizontalWall
-    Friend WithEvents GamSpace19 As GamSpace
+    Friend WithEvents HorizontalWall12 As HorizontalWall
+    Friend WithEvents Table3 As Table
+    Friend WithEvents Table8 As Table
+    Friend WithEvents Table7 As Table
+    Friend WithEvents Table6 As Table
+    Friend WithEvents Table5 As Table
+    Friend WithEvents Table4 As Table
 End Class

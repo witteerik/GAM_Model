@@ -204,7 +204,7 @@ Partial Class GAM_0_2
         GamSpace7.NeedsCleaning = False
         GamSpace7.Size = New Size(134, 127)
         GamSpace7.SpaceName = ""
-        GamSpace7.SpaceType = GamSpaceTypes.Kö_AHM_utvärdering
+        GamSpace7.SpaceType = GamSpaceTypes.Kö_AHM_kvalitetsbedömning
         GamSpace7.TabIndex = 23
         GamSpace7.UseTicks = 0L
         GamSpace7.VoidTicks = 0L

@@ -313,8 +313,14 @@ Public Class Modeller
 
     Private Sub Launch_Timer1_Tick(sender As Object, e As EventArgs) Handles StepTimer.Tick
 
+        'Updating the speed-up factor
+        StepTimer.Interval = System.Math.Max(1, CurrentModelSettings.TickScale * 1000 / CurrentModelSettings.SpeedUpFactor)
+
         'Increasing CurrentTime 
         CurrentTime += TimeSpan.FromSeconds(CurrentModelSettings.TickScale)
+
+        Me.Invalidate()
+        Me.Update()
 
         'Updating the current time
         MyAudiologyReception.UpdateTime(CurrentTime)
@@ -474,6 +480,9 @@ Public Class Modeller
                             Patient.Personnel.TaskList.Add(New PersonnelTask With {.TaskType = PersonnelTask.PersonnelTaskTypes.Tillgänglig, .StartTime = CurrentTime})
                             Patient.Personnel = Nothing
 
+                            'Ends the patient loop for this time (allows only one patient update per method call)
+                            Exit For
+
                         End If
 
                     Case PatientActivity.PatientActivityTypes.Kö_MHM
@@ -506,6 +515,9 @@ Public Class Modeller
                             Personnel.TaskList.Add(New PersonnelTask With {.TaskType = PersonnelTask.PersonnelTaskTypes.MHM, .StartTime = CurrentTime, .Duration = Duration, .HasDurationValue = True})
                             MyAudiologyReception.MovePersonToSpace(AvailabilityCheckResult.Item2, AvailabilityCheckResult.Item1)
 
+                            'Ends the patient loop for this time (allows only one patient update per method call)
+                            Exit For
+
                         End If
 
                         'If AvailabilityCheckResult is Nothing, the patient will remain in the queue
@@ -535,6 +547,9 @@ Public Class Modeller
 
                             'Releasing the audiologist from the patient
                             Patient.Personnel = Nothing
+
+                            'Ends the patient loop for this time (allows only one patient update per method call)
+                            Exit For
 
                         Else
                             Throw New Exception("Out of office places for audiologists! This will not work without a queue to descs.")
@@ -571,6 +586,9 @@ Public Class Modeller
                             Personnel.TaskList.Add(New PersonnelTask With {.TaskType = PersonnelTask.PersonnelTaskTypes.Rådgivning, .StartTime = CurrentTime, .Duration = Duration, .HasDurationValue = True})
                             MyAudiologyReception.MovePersonToSpace(AvailabilityCheckResult.Item2, AvailabilityCheckResult.Item1)
 
+                            'Ends the patient loop for this time (allows only one patient update per method call)
+                            Exit For
+
                         End If
 
                         'If AvailabilityCheckResult is Nothing, the patient will remain in the queue
@@ -599,6 +617,9 @@ Public Class Modeller
                                 Patient.Personnel.TaskList.Add(New PersonnelTask With {.TaskType = PersonnelTask.PersonnelTaskTypes.Tillgänglig, .StartTime = CurrentTime})
                                 Patient.Personnel = Nothing
 
+                                'Ends the patient loop for this time (allows only one patient update per method call)
+                                Exit For
+
                             End If
 
 
@@ -622,6 +643,9 @@ Public Class Modeller
                                 Patient.Personnel.TaskList.Add(New PersonnelTask With {.TaskType = PersonnelTask.PersonnelTaskTypes.Tillgänglig, .StartTime = CurrentTime})
                                 Patient.Personnel = Nothing
 
+                                'Ends the patient loop for this time (allows only one patient update per method call)
+                                Exit For
+
                             End If
 
                         End If
@@ -629,7 +653,7 @@ Public Class Modeller
 
                     Case PatientActivity.PatientActivityTypes.Kö_AHM_kvalitetsbedömning
 
-                        'Checking if UAud evaluation can be done
+                        'The patient is in the Queue for UAud evaluation. Checking if UAud evaluation can be done. If not the patient will remein in the queue.
                         Dim AvailabilityCheckResult = AvailablePlaceAndPersonnelRequest(GamSpaceTypes.Samtalsrum, PersonnelType.Audiologist)
                         If AvailabilityCheckResult IsNot Nothing Then
 
@@ -656,28 +680,60 @@ Public Class Modeller
                             Personnel.TaskList.Add(New PersonnelTask With {.TaskType = PersonnelTask.PersonnelTaskTypes.AHM_kvalitetsbedömning, .StartTime = CurrentTime, .Duration = Duration, .HasDurationValue = True})
                             MyAudiologyReception.MovePersonToSpace(AvailabilityCheckResult.Item2, AvailabilityCheckResult.Item1)
 
+                            'Ends the patient loop for this time (allows only one patient update per method call)
+                            Exit For
+
                         End If
 
                         'If AvailabilityCheckResult is Nothing, the patient will remain in the queue
 
+                    Case PatientActivity.PatientActivityTypes.AHM_Avslut
 
-                    Case PatientActivity.PatientActivityTypes.AHM
+                        'The UAud results is finished being printed. The patient keeps the printed results to give to the next available audiologist  
+                        'Putting the patient in the queue for UAud evaluation
 
-                        'UAud is completed,
-                        'Checking the availabilty of a personnel that can perform post measuement actions such as save and print results and direct the patient to the queue for UAud evaluation
-
-                        Dim AvailabilityCheckResult = AvailablePlaceAndPersonnelRequest(GamSpaceTypes.Kö_AHM_utvärdering, PersonnelType.Any)
+                        Dim AvailabilityCheckResult = AvailablePlaceAndPersonnelRequest(GamSpaceTypes.Kö_AHM_kvalitetsbedömning, PersonnelType.Any)
                         If AvailabilityCheckResult IsNot Nothing Then
 
                             'UAud is finished, patient is placed in the queue for AHM quality evaluation
                             Patient.ActivityList.Add(New PatientActivity With {.ActivityType = PatientActivity.PatientActivityTypes.Kö_AHM_kvalitetsbedömning, .StartTime = CurrentTime})
                             MyAudiologyReception.MovePersonToSpace(Patient, AvailabilityCheckResult.Item1)
 
+                            'Releasing the personnel, setting it's activity to idle and disconnecting it from the patient
 
+                            'Timing the last task by setting it's duration
+                            If Patient.Personnel.GetCurrentTask.HasDurationValue = False Then
+                                Patient.Personnel.GetCurrentTask.Duration = CurrentTime - Patient.Personnel.GetCurrentTask.StartTime
+                            End If
+
+                            Patient.Personnel.TaskList.Add(New PersonnelTask With {.TaskType = PersonnelTask.PersonnelTaskTypes.Tillgänglig, .StartTime = CurrentTime})
+                            Patient.Personnel = Nothing
+
+                            'Ends the patient loop for this time (allows only one patient update per method call)
+                            Exit For
+
+                        End If
+
+
+                    Case PatientActivity.PatientActivityTypes.AHM
+
+                        'UAud is completed,
+                        'Checking the availabilty of a personnel that can perform post measuement actions such as save and print results. Meanwhile, the patient remains in the UAud measurment space.
+
+                        Dim AvailabilityCheckResult = AvailablePersonnelRequest(PersonnelType.Any)
+                        If AvailabilityCheckResult IsNot Nothing Then
 
                             'UAud is finished, performing post measurment administrative tasks
-                            Dim Personnel = AvailabilityCheckResult.Item2
-                            Dim Duration = RandomizePatientActivityDuration(PatientActivity.PatientActivityTypes.AHM_Avslut)
+                            Dim Personnel = AvailabilityCheckResult
+                            Dim Duration = RandomizePersonnelTaskDuration(PersonnelTask.PersonnelTaskTypes.AHM_Avslut)
+
+                            'Moving the personnel to the patient space. (In reality the personnel also have to go to the printer and back to give the results to the patient.)
+                            Dim CurrentPatientLocation As GamSpace = Patient.Parent
+                            If CurrentPatientLocation IsNot Nothing Then
+                                MyAudiologyReception.MovePersonToSpace(AvailabilityCheckResult, CurrentPatientLocation)
+                            Else
+                                Throw New Exception("The patient is not is a space. This should not happen.")
+                            End If
 
                             'Timing the last task by setting it's duration
                             If Personnel.GetCurrentTask.HasDurationValue = False Then
@@ -686,13 +742,14 @@ Public Class Modeller
 
                             Personnel.TaskList.Add(New PersonnelTask With {.TaskType = PersonnelTask.PersonnelTaskTypes.AHM_Avslut, .StartTime = CurrentTime, .Duration = Duration, .HasDurationValue = True})
 
-                            'Moving the personnel to the personnel space (where the printer is supposedly located)
-                            Dim DeskSpaceCheck = AvailablePlaceRequest(GamSpaceTypes.Personalyta)
-                            If DeskSpaceCheck IsNot Nothing Then
-                                MyAudiologyReception.MovePersonToSpace(AvailabilityCheckResult.Item2, DeskSpaceCheck)
-                            Else
-                                Throw New Exception("No available space. The model requires that personnel can always move to space type Personalyta.")
-                            End If
+                            'Locking the personnel to the patient
+                            Patient.Personnel = Personnel
+
+                            'UAud is finished, patient gets the task to wait for AHM_Avslut, staying in the same space
+                            Patient.ActivityList.Add(New PatientActivity With {.ActivityType = PatientActivity.PatientActivityTypes.AHM_Avslut, .StartTime = CurrentTime, .Duration = Duration, .HasDurationValue = True})
+
+                            'Ends the patient loop for this time (allows only one patient update per method call)
+                            Exit For
 
                         End If
 
@@ -724,6 +781,9 @@ Public Class Modeller
                             Personnel.TaskList.Add(New PersonnelTask With {.TaskType = PersonnelTask.PersonnelTaskTypes.AHM_Start, .StartTime = CurrentTime, .Duration = UAudStartHelpDuration, .HasDurationValue = True})
                             MyAudiologyReception.MovePersonToSpace(AvailabilityCheckResult.Item2, AvailabilityCheckResult.Item1)
 
+                            'Ends the patient loop for this time (allows only one patient update per method call)
+                            Exit For
+
                         End If
 
                         'If AvailabilityCheckResult is Nothing, the patient will remain in the queue
@@ -747,6 +807,9 @@ Public Class Modeller
 
                             Patient.Personnel.TaskList.Add(New PersonnelTask With {.TaskType = PersonnelTask.PersonnelTaskTypes.Tillgänglig, .StartTime = CurrentTime})
                             Patient.Personnel = Nothing
+
+                            'Ends the patient loop for this time (allows only one patient update per method call)
+                            Exit For
 
                         End If
 
@@ -782,6 +845,9 @@ Public Class Modeller
 
                             Personnel.TaskList.Add(New PersonnelTask With {.TaskType = PersonnelTask.PersonnelTaskTypes.Intervju, .StartTime = CurrentTime, .Duration = Duration, .HasDurationValue = True})
                             MyAudiologyReception.MovePersonToSpace(Personnel, AvailabilityCheckResult.Item1)
+
+                            'Ends the patient loop for this time (allows only one patient update per method call)
+                            Exit For
 
                         End If
 
@@ -836,9 +902,6 @@ Public Class Modeller
 
                 Throw New Exception("Questionnaries not yet implemented")
 
-            Case PatientActivity.PatientActivityTypes.AHM_Avslut
-                Return TimeSpan.FromMinutes(Math.Max(0.1, MathNet.Numerics.Distributions.Normal.Sample(CurrentModelSettings.UAudPostAdminTime, CurrentModelSettings.SdUAudPostAdminTime)))
-
             Case PatientActivity.PatientActivityTypes.AHM_kvalitetsbedömning
                 Return TimeSpan.FromMinutes(Math.Max(0.1, MathNet.Numerics.Distributions.Normal.Sample(CurrentModelSettings.UAudEvaluationTime, CurrentModelSettings.SdUAudEvaluationTime)))
 
@@ -863,6 +926,10 @@ Public Class Modeller
     Private Function RandomizePersonnelTaskDuration(ByVal TaskType As PersonnelTask.PersonnelTaskTypes) As TimeSpan
 
         Select Case TaskType
+
+            Case PersonnelTask.PersonnelTaskTypes.AHM_Avslut
+                Return TimeSpan.FromMinutes(Math.Max(0.1, MathNet.Numerics.Distributions.Normal.Sample(CurrentModelSettings.UAudPostAdminTime, CurrentModelSettings.SdUAudPostAdminTime)))
+
             Case PersonnelTask.PersonnelTaskTypes.Rengöring
                 Return TimeSpan.FromMinutes(Math.Max(0.1, MathNet.Numerics.Distributions.Normal.Sample(CurrentModelSettings.CleaningTime, CurrentModelSettings.SdCleaningTime)))
 
@@ -1099,11 +1166,11 @@ Public Class Modeller
 
         Dim PatientActivityDurationStringList As New List(Of String)
         PatientActivityDurationStringList.Add("Patient activity summary (minutes)")
-        PatientActivityDurationStringList.Add("POT*" & vbTab & "MEAN" & vbTab & "SD" & vbTab & "ACTIVITY TIME")
+        PatientActivityDurationStringList.Add("MEAN" & vbTab & "SD" & vbTab & "ACTIVITY TIME")
         For Each ListItem In SortedPatientActivityDurationList
-            PatientActivityDurationStringList.Add(Math.Round(100 * ListItem.Item2.Average / CurrentModelSettings.WorkMinutes) & "%" & vbTab & Math.Round(ListItem.Item2.Average, 1) & vbTab & "(" & Math.Round(MathNet.Numerics.Statistics.Statistics.StandardDeviation(ListItem.Item2.ToArray), 1) & ")" & vbTab & ListItem.Item1)
+            PatientActivityDurationStringList.Add(Math.Round(ListItem.Item2.Average, 1) & vbTab & "(" & Math.Round(MathNet.Numerics.Statistics.Statistics.StandardDeviation(ListItem.Item2.ToArray), 1) & ")" & vbTab & ListItem.Item1)
         Next
-        PatientActivityDurationStringList.Add("* POT = proportion of personnel work time (" & CurrentModelSettings.WorkMinutes \ 60 & " hours and " & CurrentModelSettings.WorkMinutes Mod 60 & " minutes)")
+        'PatientActivityDurationStringList.Add("* POT = proportion of personnel work time (" & CurrentModelSettings.WorkMinutes \ 60 & " hours and " & CurrentModelSettings.WorkMinutes Mod 60 & " minutes)")
 
 
         'Summarizing personnel tasks
@@ -1125,11 +1192,11 @@ Public Class Modeller
 
         Dim PersonnelTaskDurationStringList As New List(Of String)
         PersonnelTaskDurationStringList.Add("Personnel Task summary (minutes)")
-        PersonnelTaskDurationStringList.Add("POT*" & vbTab & "MEAN" & vbTab & "SD" & vbTab & "TASK TYPE")
+        PersonnelTaskDurationStringList.Add("MEAN" & vbTab & "SD" & vbTab & "TASK TYPE")
         For Each ListItem In SortedPersonnelTaskDurationList
-            PersonnelTaskDurationStringList.Add(Math.Round(100 * ListItem.Item2.Sum / (PersonnelList.Count * CurrentModelSettings.WorkMinutes)) & "%" & vbTab & Math.Round(ListItem.Item2.Average, 1) & vbTab & "(" & Math.Round(MathNet.Numerics.Statistics.Statistics.StandardDeviation(ListItem.Item2.ToArray), 1) & ")" & vbTab & ListItem.Item1)
+            PersonnelTaskDurationStringList.Add(Math.Round(ListItem.Item2.Average, 1) & vbTab & "(" & Math.Round(MathNet.Numerics.Statistics.Statistics.StandardDeviation(ListItem.Item2.ToArray), 1) & ")" & vbTab & ListItem.Item1)
         Next
-        PersonnelTaskDurationStringList.Add("* POT = proportion of personnel work time (" & CurrentModelSettings.WorkMinutes \ 60 & " hours and " & CurrentModelSettings.WorkMinutes Mod 60 & " minutes)")
+        'PersonnelTaskDurationStringList.Add("* POT = proportion of personnel work time (" & CurrentModelSettings.WorkMinutes \ 60 & " hours and " & CurrentModelSettings.WorkMinutes Mod 60 & " minutes)")
 
 
         'Summarizing space use
@@ -1148,7 +1215,7 @@ Public Class Modeller
         For Each ListItem In SortedSpaceUseSummaryList
             SpaceTaskDurationStringList.Add(Math.Round(100 * ListItem.Item2) & "%" & vbTab & ListItem.Item1)
         Next
-        SpaceTaskDurationStringList.Add("* POT = proportion of personell work time each space type is used (" & CurrentModelSettings.WorkMinutes \ 60 & " hours and " & CurrentModelSettings.WorkMinutes Mod 60 & " minutes)")
+        SpaceTaskDurationStringList.Add("* POT = proportion of personell work time each space type is used (" & CurrentModelSettings.WorkMinutes \ 60 & " hours and " & CurrentModelSettings.WorkMinutes Mod 60 & " minutes). (Closed spaces are not counted.)")
 
         StatisticsTextBox.Text = String.Join(vbCrLf, PatientActivityDurationStringList) &
             vbCrLf & vbCrLf &

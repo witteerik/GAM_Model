@@ -74,7 +74,7 @@ Public Class ModelSettings
     ''' </summary>
     ''' <returns></returns>
     <PropertyDescription("The time in seconds that each timer tick / model update represents")>
-    Public Property TickScale As Double = 10
+    Public Property TickScale As Double = 1
 
     ''' <summary>
     ''' The speed of the model. If SpeedUpFactor is set to 1, simulation will happen in real-time. Maximum is 1000

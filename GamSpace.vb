@@ -99,7 +99,7 @@ Public Class GamSpace
         'Writing the space name on the control
         If SpaceName = "" Then
 
-            e.Graphics.DrawString(SpaceType.ToString, New Font(Me.Font.FontFamily, 8), Brushes.BlueViolet, New RectangleF(0, e.ClipRectangle.Height - 15, e.ClipRectangle.Width, 25))
+            e.Graphics.DrawString(SpaceType.ToString & " (" & SpaceType & ")", New Font(Me.Font.FontFamily, 8), Brushes.BlueViolet, New RectangleF(0, e.ClipRectangle.Height - 15, e.ClipRectangle.Width, 25))
 
         Else
 
@@ -120,7 +120,7 @@ Public Enum GamSpaceTypes
     Samtalsrum
     Kö_AHM
     AHM
-    Kö_AHM_utvärdering
+    Kö_AHM_kvalitetsbedömning
     Kö_MHM
     MHM
     Enkät

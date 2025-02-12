@@ -37,19 +37,22 @@ Public Class PatientActivity
     Public ActivityType As PatientActivityTypes
 
     Public Enum PatientActivityTypes
-        Väntar = 0
-        Intervju = 1
-        Kö_AHM = 2
-        AHM = 3
-        AHM_Avslut = 4
-        Kö_AHM_kvalitetsbedömning = 5
-        AHM_kvalitetsbedömning = 6
-        Kö_rådgivning = 7
-        Rådgivning = 8
-        Kö_MHM = 9
-        MHM = 10
-        Enkät = 11
-        Hemgång = 12
+        'Enum values determine the order in which the (completed, or ongoing without a preset duration) tasks is prioritized
+        'Values must be unique! Using Implicit values and adding names in the prioritized order
+        Hemgång
+        Enkät
+        Kö_AHM 'When this activity is ongoing (patient is waiting) it should be prioritized to ensure as many patients in AHM as possible
+        Rådgivning
+        Kö_rådgivning
+        MHM
+        Kö_MHM
+        AHM_kvalitetsbedömning
+        Kö_AHM_kvalitetsbedömning
+        AHM_Avslut
+        AHM
+        'Kö_AHM
+        Intervju
+        Väntar
     End Enum
 
 End Class

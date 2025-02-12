@@ -23,6 +23,15 @@ Partial Class GAM_0_1
     <System.Diagnostics.DebuggerStepThrough()> _
     Private Sub InitializeComponent()
         MyAudiologyReception = New AudiologyReception()
+        Table8 = New Table()
+        Table7 = New Table()
+        Table6 = New Table()
+        Table5 = New Table()
+        Table4 = New Table()
+        Table3 = New Table()
+        HorizontalWall12 = New HorizontalWall()
+        HorizontalWall9 = New HorizontalWall()
+        HorizontalWall6 = New HorizontalWall()
         GamSpace19 = New GamSpace()
         Table2 = New Table()
         GamSpace18 = New GamSpace()
@@ -57,15 +66,6 @@ Partial Class GAM_0_1
         Table1 = New Table()
         HorizontalWall1 = New HorizontalWall()
         VerticalWall1 = New VerticalWall()
-        HorizontalWall6 = New HorizontalWall()
-        HorizontalWall9 = New HorizontalWall()
-        HorizontalWall12 = New HorizontalWall()
-        Table3 = New Table()
-        Table4 = New Table()
-        Table5 = New Table()
-        Table6 = New Table()
-        Table7 = New Table()
-        Table8 = New Table()
         MyAudiologyReception.SuspendLayout()
         SuspendLayout()
         ' 
@@ -119,6 +119,78 @@ Partial Class GAM_0_1
         MyAudiologyReception.Name = "MyAudiologyReception"
         MyAudiologyReception.Size = New Size(1357, 772)
         MyAudiologyReception.TabIndex = 0
+        ' 
+        ' Table8
+        ' 
+        Table8.BackColor = Color.FromArgb(CByte(255), CByte(224), CByte(192))
+        Table8.Location = New Point(12, 57)
+        Table8.Name = "Table8"
+        Table8.Size = New Size(33, 96)
+        Table8.TabIndex = 53
+        ' 
+        ' Table7
+        ' 
+        Table7.BackColor = Color.FromArgb(CByte(255), CByte(224), CByte(192))
+        Table7.Location = New Point(12, 170)
+        Table7.Name = "Table7"
+        Table7.Size = New Size(33, 96)
+        Table7.TabIndex = 52
+        ' 
+        ' Table6
+        ' 
+        Table6.BackColor = Color.FromArgb(CByte(255), CByte(224), CByte(192))
+        Table6.Location = New Point(12, 283)
+        Table6.Name = "Table6"
+        Table6.Size = New Size(33, 96)
+        Table6.TabIndex = 51
+        ' 
+        ' Table5
+        ' 
+        Table5.BackColor = Color.FromArgb(CByte(255), CByte(224), CByte(192))
+        Table5.Location = New Point(12, 396)
+        Table5.Name = "Table5"
+        Table5.Size = New Size(33, 96)
+        Table5.TabIndex = 50
+        ' 
+        ' Table4
+        ' 
+        Table4.BackColor = Color.FromArgb(CByte(255), CByte(224), CByte(192))
+        Table4.Location = New Point(12, 509)
+        Table4.Name = "Table4"
+        Table4.Size = New Size(33, 96)
+        Table4.TabIndex = 49
+        ' 
+        ' Table3
+        ' 
+        Table3.BackColor = Color.FromArgb(CByte(255), CByte(224), CByte(192))
+        Table3.Location = New Point(12, 622)
+        Table3.Name = "Table3"
+        Table3.Size = New Size(33, 96)
+        Table3.TabIndex = 48
+        ' 
+        ' HorizontalWall12
+        ' 
+        HorizontalWall12.BackColor = Color.DarkSlateGray
+        HorizontalWall12.Location = New Point(784, 129)
+        HorizontalWall12.Name = "HorizontalWall12"
+        HorizontalWall12.Size = New Size(128, 5)
+        HorizontalWall12.TabIndex = 47
+        ' 
+        ' HorizontalWall9
+        ' 
+        HorizontalWall9.BackColor = Color.DarkSlateGray
+        HorizontalWall9.Location = New Point(784, 355)
+        HorizontalWall9.Name = "HorizontalWall9"
+        HorizontalWall9.Size = New Size(128, 5)
+        HorizontalWall9.TabIndex = 46
+        ' 
+        ' HorizontalWall6
+        ' 
+        HorizontalWall6.BackColor = Color.DarkSlateGray
+        HorizontalWall6.Location = New Point(784, 483)
+        HorizontalWall6.Name = "HorizontalWall6"
+        HorizontalWall6.Size = New Size(128, 5)
+        HorizontalWall6.TabIndex = 45
         ' 
         ' GamSpace19
         ' 
@@ -233,7 +305,7 @@ Partial Class GAM_0_1
         GamSpace13.Location = New Point(219, 12)
         GamSpace13.Name = "GamSpace13"
         GamSpace13.NeedsCleaning = False
-        GamSpace13.Size = New Size(180, 57)
+        GamSpace13.Size = New Size(193, 57)
         GamSpace13.SpaceName = ""
         GamSpace13.SpaceType = GamSpaceTypes.Kö_AHM_kvalitetsbedömning
         GamSpace13.TabIndex = 30
@@ -494,78 +566,6 @@ Partial Class GAM_0_1
         VerticalWall1.Name = "VerticalWall1"
         VerticalWall1.Size = New Size(5, 56)
         VerticalWall1.TabIndex = 2
-        ' 
-        ' HorizontalWall6
-        ' 
-        HorizontalWall6.BackColor = Color.DarkSlateGray
-        HorizontalWall6.Location = New Point(784, 483)
-        HorizontalWall6.Name = "HorizontalWall6"
-        HorizontalWall6.Size = New Size(128, 5)
-        HorizontalWall6.TabIndex = 45
-        ' 
-        ' HorizontalWall9
-        ' 
-        HorizontalWall9.BackColor = Color.DarkSlateGray
-        HorizontalWall9.Location = New Point(784, 355)
-        HorizontalWall9.Name = "HorizontalWall9"
-        HorizontalWall9.Size = New Size(128, 5)
-        HorizontalWall9.TabIndex = 46
-        ' 
-        ' HorizontalWall12
-        ' 
-        HorizontalWall12.BackColor = Color.DarkSlateGray
-        HorizontalWall12.Location = New Point(784, 129)
-        HorizontalWall12.Name = "HorizontalWall12"
-        HorizontalWall12.Size = New Size(128, 5)
-        HorizontalWall12.TabIndex = 47
-        ' 
-        ' Table3
-        ' 
-        Table3.BackColor = Color.FromArgb(CByte(255), CByte(224), CByte(192))
-        Table3.Location = New Point(12, 622)
-        Table3.Name = "Table3"
-        Table3.Size = New Size(33, 96)
-        Table3.TabIndex = 48
-        ' 
-        ' Table4
-        ' 
-        Table4.BackColor = Color.FromArgb(CByte(255), CByte(224), CByte(192))
-        Table4.Location = New Point(12, 509)
-        Table4.Name = "Table4"
-        Table4.Size = New Size(33, 96)
-        Table4.TabIndex = 49
-        ' 
-        ' Table5
-        ' 
-        Table5.BackColor = Color.FromArgb(CByte(255), CByte(224), CByte(192))
-        Table5.Location = New Point(12, 396)
-        Table5.Name = "Table5"
-        Table5.Size = New Size(33, 96)
-        Table5.TabIndex = 50
-        ' 
-        ' Table6
-        ' 
-        Table6.BackColor = Color.FromArgb(CByte(255), CByte(224), CByte(192))
-        Table6.Location = New Point(12, 283)
-        Table6.Name = "Table6"
-        Table6.Size = New Size(33, 96)
-        Table6.TabIndex = 51
-        ' 
-        ' Table7
-        ' 
-        Table7.BackColor = Color.FromArgb(CByte(255), CByte(224), CByte(192))
-        Table7.Location = New Point(12, 170)
-        Table7.Name = "Table7"
-        Table7.Size = New Size(33, 96)
-        Table7.TabIndex = 52
-        ' 
-        ' Table8
-        ' 
-        Table8.BackColor = Color.FromArgb(CByte(255), CByte(224), CByte(192))
-        Table8.Location = New Point(12, 57)
-        Table8.Name = "Table8"
-        Table8.Size = New Size(33, 96)
-        Table8.TabIndex = 53
         ' 
         ' GAM_0_1
         ' 

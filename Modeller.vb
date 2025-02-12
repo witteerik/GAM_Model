@@ -452,7 +452,30 @@ Public Class Modeller
 
 
         '4. Selecting new patient activities and personnel tasks
+
+        'Prioritizing patients
+        Dim PatientPrioritizationList As New List(Of Patient)
+
+        Dim PatientSortedInPrioritizedActivitiesList As New SortedList(Of PatientActivity.PatientActivityTypes, List(Of Patient))
+        Dim PatientActivityTypeEnumValues = [Enum].GetValues(GetType(PatientActivity.PatientActivityTypes))
+        'Adding a list for each enum value, in the order that enum values (i.e. activities) should be prioritized (as set by the constants for each PatientActivityTypes Enum Name)
+        For Each EnumValue In PatientActivityTypeEnumValues
+            PatientSortedInPrioritizedActivitiesList.Add(EnumValue, New List(Of Patient))
+        Next
+
+        'Adding the patients in InHousePatientsList into PatientSortedInPrioritizedActivitiesList
         For Each Patient In InHousePatientsList
+            PatientSortedInPrioritizedActivitiesList(Patient.GetLastStartedActivity.ActivityType).Add(Patient)
+        Next
+
+        'Adding the patients in the prioritized order into PatientPrioritizationList
+        For Each PatientList In PatientSortedInPrioritizedActivitiesList
+            PatientPrioritizationList.AddRange(PatientList.Value)
+        Next
+
+
+        'Going through each patient, in the prioritized order
+        For Each Patient In PatientPrioritizationList
             If Patient.LatestActivityFinished = True Then
 
                 Dim LatestActivity = Patient.GetLastStartedActivity
@@ -479,9 +502,6 @@ Public Class Modeller
 
                             Patient.Personnel.TaskList.Add(New PersonnelTask With {.TaskType = PersonnelTask.PersonnelTaskTypes.Tillgänglig, .StartTime = CurrentTime})
                             Patient.Personnel = Nothing
-
-                            'Ends the patient loop for this time (allows only one patient update per method call)
-                            Exit For
 
                         End If
 
@@ -515,9 +535,6 @@ Public Class Modeller
                             Personnel.TaskList.Add(New PersonnelTask With {.TaskType = PersonnelTask.PersonnelTaskTypes.MHM, .StartTime = CurrentTime, .Duration = Duration, .HasDurationValue = True})
                             MyAudiologyReception.MovePersonToSpace(AvailabilityCheckResult.Item2, AvailabilityCheckResult.Item1)
 
-                            'Ends the patient loop for this time (allows only one patient update per method call)
-                            Exit For
-
                         End If
 
                         'If AvailabilityCheckResult is Nothing, the patient will remain in the queue
@@ -547,9 +564,6 @@ Public Class Modeller
 
                             'Releasing the audiologist from the patient
                             Patient.Personnel = Nothing
-
-                            'Ends the patient loop for this time (allows only one patient update per method call)
-                            Exit For
 
                         Else
                             Throw New Exception("Out of office places for audiologists! This will not work without a queue to descs.")
@@ -586,9 +600,6 @@ Public Class Modeller
                             Personnel.TaskList.Add(New PersonnelTask With {.TaskType = PersonnelTask.PersonnelTaskTypes.Rådgivning, .StartTime = CurrentTime, .Duration = Duration, .HasDurationValue = True})
                             MyAudiologyReception.MovePersonToSpace(AvailabilityCheckResult.Item2, AvailabilityCheckResult.Item1)
 
-                            'Ends the patient loop for this time (allows only one patient update per method call)
-                            Exit For
-
                         End If
 
                         'If AvailabilityCheckResult is Nothing, the patient will remain in the queue
@@ -617,9 +628,6 @@ Public Class Modeller
                                 Patient.Personnel.TaskList.Add(New PersonnelTask With {.TaskType = PersonnelTask.PersonnelTaskTypes.Tillgänglig, .StartTime = CurrentTime})
                                 Patient.Personnel = Nothing
 
-                                'Ends the patient loop for this time (allows only one patient update per method call)
-                                Exit For
-
                             End If
 
 
@@ -642,9 +650,6 @@ Public Class Modeller
 
                                 Patient.Personnel.TaskList.Add(New PersonnelTask With {.TaskType = PersonnelTask.PersonnelTaskTypes.Tillgänglig, .StartTime = CurrentTime})
                                 Patient.Personnel = Nothing
-
-                                'Ends the patient loop for this time (allows only one patient update per method call)
-                                Exit For
 
                             End If
 
@@ -680,9 +685,6 @@ Public Class Modeller
                             Personnel.TaskList.Add(New PersonnelTask With {.TaskType = PersonnelTask.PersonnelTaskTypes.AHM_kvalitetsbedömning, .StartTime = CurrentTime, .Duration = Duration, .HasDurationValue = True})
                             MyAudiologyReception.MovePersonToSpace(AvailabilityCheckResult.Item2, AvailabilityCheckResult.Item1)
 
-                            'Ends the patient loop for this time (allows only one patient update per method call)
-                            Exit For
-
                         End If
 
                         'If AvailabilityCheckResult is Nothing, the patient will remain in the queue
@@ -708,9 +710,6 @@ Public Class Modeller
 
                             Patient.Personnel.TaskList.Add(New PersonnelTask With {.TaskType = PersonnelTask.PersonnelTaskTypes.Tillgänglig, .StartTime = CurrentTime})
                             Patient.Personnel = Nothing
-
-                            'Ends the patient loop for this time (allows only one patient update per method call)
-                            Exit For
 
                         End If
 
@@ -748,9 +747,6 @@ Public Class Modeller
                             'UAud is finished, patient gets the task to wait for AHM_Avslut, staying in the same space
                             Patient.ActivityList.Add(New PatientActivity With {.ActivityType = PatientActivity.PatientActivityTypes.AHM_Avslut, .StartTime = CurrentTime, .Duration = Duration, .HasDurationValue = True})
 
-                            'Ends the patient loop for this time (allows only one patient update per method call)
-                            Exit For
-
                         End If
 
                     Case PatientActivity.PatientActivityTypes.Kö_AHM
@@ -781,9 +777,6 @@ Public Class Modeller
                             Personnel.TaskList.Add(New PersonnelTask With {.TaskType = PersonnelTask.PersonnelTaskTypes.AHM_Start, .StartTime = CurrentTime, .Duration = UAudStartHelpDuration, .HasDurationValue = True})
                             MyAudiologyReception.MovePersonToSpace(AvailabilityCheckResult.Item2, AvailabilityCheckResult.Item1)
 
-                            'Ends the patient loop for this time (allows only one patient update per method call)
-                            Exit For
-
                         End If
 
                         'If AvailabilityCheckResult is Nothing, the patient will remain in the queue
@@ -807,9 +800,6 @@ Public Class Modeller
 
                             Patient.Personnel.TaskList.Add(New PersonnelTask With {.TaskType = PersonnelTask.PersonnelTaskTypes.Tillgänglig, .StartTime = CurrentTime})
                             Patient.Personnel = Nothing
-
-                            'Ends the patient loop for this time (allows only one patient update per method call)
-                            Exit For
 
                         End If
 
@@ -845,9 +835,6 @@ Public Class Modeller
 
                             Personnel.TaskList.Add(New PersonnelTask With {.TaskType = PersonnelTask.PersonnelTaskTypes.Intervju, .StartTime = CurrentTime, .Duration = Duration, .HasDurationValue = True})
                             MyAudiologyReception.MovePersonToSpace(Personnel, AvailabilityCheckResult.Item1)
-
-                            'Ends the patient loop for this time (allows only one patient update per method call)
-                            Exit For
 
                         End If
 
@@ -1157,7 +1144,7 @@ Public Class Modeller
             Next
         Next
 
-        Dim PatientTempList = PatientActivityDurationList.ToList().OrderByDescending(Function(kvp) kvp.Value.Sum()).ToList()
+        Dim PatientTempList = PatientActivityDurationList.ToList().OrderByDescending(Function(kvp) kvp.Value.Average()).ToList()
 
         Dim SortedPatientActivityDurationList As New List(Of Tuple(Of String, List(Of Double)))
         For Each kvp In PatientTempList
@@ -1183,7 +1170,7 @@ Public Class Modeller
             Next
         Next
 
-        Dim PersonnelTempList = PersonnelTaskDurationList.ToList().OrderByDescending(Function(kvp) kvp.Value.Sum()).ToList()
+        Dim PersonnelTempList = PersonnelTaskDurationList.ToList().OrderByDescending(Function(kvp) kvp.Value.Average()).ToList()
 
         Dim SortedPersonnelTaskDurationList As New List(Of Tuple(Of String, List(Of Double)))
         For Each kvp In PersonnelTempList

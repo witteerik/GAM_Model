@@ -89,7 +89,7 @@ Public Class ModelSettings
     ''' </summary>
     ''' <returns></returns>
     <PropertyDescription("The total number of minutes that the simulation should represent")>
-    Public Property OpenMinutes As Double = 2.5 * 60
+    Public Property OpenMinutes As Double = 2.5 * 60 ' Halv två til fyra
 
     ''' <summary>
     ''' The total number of minutes that the personnel work
@@ -97,27 +97,6 @@ Public Class ModelSettings
     ''' <returns></returns>
     <PropertyDescription("The total number of minutes that the personnel work")>
     Public Property WorkMinutes As Double = 3 * 60
-
-    ''' <summary>
-    ''' The average number of minutes that each short personnel break takes
-    ''' </summary>
-    ''' <returns></returns>
-    <PropertyDescription("The average number of minutes that each short personnel break takes")>
-    Public Property AverageShortBreakTime As Double = 7
-
-    ''' <summary>
-    ''' The standard deviation of AverageShortBreakTime 
-    ''' </summary>
-    ''' <returns></returns>
-    <PropertyDescription("The standard deviation of AverageShortBreakTime ")>
-    Public Property SdShortBreakTime As Double = 3
-
-    ''' <summary>
-    ''' The (maximum) number of short breaks that is allowed to co-occur
-    ''' </summary>
-    ''' <returns></returns>
-    <PropertyDescription("The (maximum) number of short breaks that is allowed to co-occur")>
-    Public Property NumberOfSimultaneousShortBreaks As Integer = 2
 
     ''' <summary>
     ''' The average number of short breaks each personnel takes per hour
@@ -132,6 +111,28 @@ Public Class ModelSettings
     ''' <returns></returns>
     <PropertyDescription("The standard deviation of AverageNumberOfShortBreaks")>
     Public Property SdNumberOfShortBreaksPerHour As Double = 0.5
+
+    ''' <summary>
+    ''' The average number of minutes that each short personnel break takes
+    ''' </summary>
+    ''' <returns></returns>
+    <PropertyDescription("The average number of minutes that each short personnel break takes")>
+    Public Property AverageShortBreakTime As Double = 2
+
+    ''' <summary>
+    ''' The standard deviation of AverageShortBreakTime 
+    ''' </summary>
+    ''' <returns></returns>
+    <PropertyDescription("The standard deviation of AverageShortBreakTime ")>
+    Public Property SdShortBreakTime As Double = 1
+
+    ''' <summary>
+    ''' The (maximum) number of short breaks that is allowed to co-occur
+    ''' </summary>
+    ''' <returns></returns>
+    <PropertyDescription("The (maximum) number of short breaks that is allowed to co-occur")>
+    Public Property NumberOfSimultaneousShortBreaks As Integer = 2
+
 
     ''' <summary>
     ''' The number of minutes between each new patiented
@@ -160,7 +161,7 @@ Public Class ModelSettings
     ''' </summary>
     ''' <returns></returns>
     <PropertyDescription("The average time (in minutes) for initial patient interview and instructions")>
-    Public Property AveragePatientInterviewTime As Double = 3
+    Public Property AveragePatientInterviewTime As Double = 4
 
     ''' <summary>
     ''' The standard deviation (in minutes) of the average for initial patient interview and instructions
@@ -174,7 +175,7 @@ Public Class ModelSettings
     ''' </summary>
     ''' <returns></returns>
     <PropertyDescription("The time it takes for the personnel to help a patient getting started with UAud")>
-    Public Property UAudStartAssistanceTime As Double = 1
+    Public Property UAudStartAssistanceTime As Double = 2
 
     ''' <summary>
     ''' The standard deviation of the UAudStartAssistanceTime 
@@ -188,14 +189,21 @@ Public Class ModelSettings
     ''' </summary>
     ''' <returns></returns>
     <PropertyDescription("The average time (in minutes) for user operated PTA")>
-    Public Property AverageUAudTime As Double = 15
+    Public Property AverageUAudTime As Double = 20
+
+    ''' <summary>
+    ''' The standard deviation (in minutes of the average time for user operated PTA
+    ''' </summary>
+    ''' <returns></returns>
+    <PropertyDescription("The standard deviation (in minutes of the average time for user operated PTA")>
+    Public Property SdUAudTime As Double = 6
 
     ''' <summary>
     ''' The average time it takes for the personnel to store and print results of the UAud
     ''' </summary>
     ''' <returns></returns>
     <PropertyDescription("The average time it takes for the personnel  to store and print results of the UAud")>
-    Public Property UAudPostAdminTime As Double = 1
+    Public Property UAudPostAdminTime As Double = 2
 
     ''' <summary>
     ''' The standard deviation of the UAudPostAdminTime 
@@ -203,13 +211,6 @@ Public Class ModelSettings
     ''' <returns></returns>
     <PropertyDescription("The standard deviation of the UAudPostAdminTime ")>
     Public Property SdUAudPostAdminTime As Double = 0.5
-
-    ''' <summary>
-    ''' The standard deviation (in minutes of the average time for user operated PTA
-    ''' </summary>
-    ''' <returns></returns>
-    <PropertyDescription("The standard deviation (in minutes of the average time for user operated PTA")>
-    Public Property SdUAudTime As Double = 5
 
     ''' <summary>
     ''' The average time it takes for the audiologist to evaluate the quality of the UAud
@@ -253,21 +254,21 @@ Public Class ModelSettings
     ''' </summary>
     ''' <returns></returns>
     <PropertyDescription("The average time (in minutes) for (post measurement) patient counselling")>
-    Public Property AveragePatientCounsellingTime As Double = 4
+    Public Property AveragePatientCounsellingTime As Double = 7
 
     ''' <summary>
     ''' The standard deviation (in minutes) for (post measurement) patient counselling
     ''' </summary>
     ''' <returns></returns>
     <PropertyDescription("The standard deviation (in minutes) for (post measurement) patient counselling")>
-    Public Property SdPatientCounsellingTime As Double = 2
+    Public Property SdPatientCounsellingTime As Double = 3
 
     ''' <summary>
     ''' The average time to write patient record / doumentation
     ''' </summary>
     ''' <returns></returns>
     <PropertyDescription("The average time to write patient record / doumentation")>
-    Public Property AverageDocumentationTime As Double = 5
+    Public Property AverageDocumentationTime As Double = 4
 
     ''' <summary>
     ''' The standard deviation of AverageDocumentationTime 

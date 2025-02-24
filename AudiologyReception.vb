@@ -102,13 +102,16 @@
                 Else
                     GamSpace.UseTicks += 1
                 End If
+
+                GamSpace.HighestNumberOfPersons = Math.Max(GamSpace.HighestNumberOfPersons, GamSpace.Controls.Count)
+
             End If
         Next
 
     End Sub
 
     ''' <summary>
-    ''' Returns the proportion os use for each type of GamSpace
+    ''' Returns the proportion of use for each type of GamSpace
     ''' </summary>
     ''' <returns></returns>
     Public Function SummarizeSpaceUse() As SortedList(Of String, Double)
@@ -141,5 +144,32 @@
         Return OutputList
 
     End Function
+
+    ''' <summary>
+    ''' Returns a list of the highest number of persons that were in a GAM-space simultaneously, separately for each type of GAM space.
+    ''' </summary>
+    ''' <returns></returns>
+    Public Function GetHighestSpaceInhabitantCount() As SortedList(Of String, Integer)
+
+        Dim AllGamPlaces = GetAllGamSpaces()
+
+        Dim OutputList As New SortedList(Of String, Integer)
+
+        For Each GamSpace In AllGamPlaces
+
+            If OutputList.ContainsKey(GamSpace.SpaceType.ToString) = False Then
+                OutputList.Add(GamSpace.SpaceType.ToString, 0)
+            End If
+
+            'Getting the max in each space type
+            OutputList(GamSpace.SpaceType.ToString) = Math.Max(OutputList(GamSpace.SpaceType.ToString), GamSpace.HighestNumberOfPersons)
+
+        Next
+
+        Return OutputList
+
+    End Function
+
+
 
 End Class

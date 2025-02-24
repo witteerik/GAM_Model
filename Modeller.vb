@@ -1237,6 +1237,15 @@ Public Class Modeller
         Next
         SpaceTaskDurationStringList.Add("* POT = proportion of personell work time each space type is used (" & CurrentModelSettings.WorkMinutes \ 60 & " hours and " & CurrentModelSettings.WorkMinutes Mod 60 & " minutes). (Closed spaces are not counted.)")
 
+        'Summarizing space highest number of persons
+        Dim HighestSpaceInhabitantCounts = MyAudiologyReception.GetHighestSpaceInhabitantCount
+        Dim HighestSpaceInhabitantCountsList As New List(Of String)
+        HighestSpaceInhabitantCountsList.Add("Highest number of persons present simultaneously")
+        HighestSpaceInhabitantCountsList.Add("COUNT" & vbTab & "SPACE TYPE")
+        For Each kvp In HighestSpaceInhabitantCounts
+            HighestSpaceInhabitantCountsList.Add(kvp.Value & vbTab & kvp.Key)
+        Next
+
         'Also exporting the scheduled time for each patient
         Dim TimeSummaryList As New List(Of String)
         TimeSummaryList.Add("Appointment times:")
@@ -1310,6 +1319,8 @@ Public Class Modeller
             String.Join(vbCrLf, PersonnelTaskDurationStringList) &
             vbCrLf & vbCrLf &
             String.Join(vbCrLf, SpaceTaskDurationStringList) &
+            vbCrLf & vbCrLf &
+            String.Join(vbCrLf, HighestSpaceInhabitantCountsList) &
             vbCrLf & vbCrLf &
             String.Join(vbCrLf, TimeSummaryList) &
             vbCrLf & vbCrLf &

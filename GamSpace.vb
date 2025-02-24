@@ -20,6 +20,11 @@ Public Class GamSpace
     ''' <returns></returns>
     Public Property VoidTicks As Long = 0
 
+    ''' <summary>
+    ''' The number of persons that were ever in the space at one and the same time.
+    ''' </summary>
+    ''' <returns></returns>
+    Public Property HighestNumberOfPersons As Integer = 0
 
     Private _IsClosed As Boolean = False
     Public Property IsClosed As Boolean

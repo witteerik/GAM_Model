@@ -25,8 +25,6 @@ Public Class Modeller
 
     Public CurrentModelSettings As ModelSettings = Nothing
 
-
-
     Private Sub Modeller_Load(sender As Object, e As EventArgs) Handles MyBase.Load
 
         StartModelling_Button.Enabled = False
@@ -157,6 +155,15 @@ Public Class Modeller
 
     Private Sub StartModelling_Button_Click(sender As Object, e As EventArgs) Handles StartModelling_Button.Click
 
+        'Clearing lists
+        PlannedPatientsList = New List(Of Patient)
+        InHousePatientsList = New List(Of Patient)
+        PatientsGoneHomeList = New List(Of Patient)
+        AllPatientList = New List(Of Patient)
+        AudiologistList = New List(Of Audiologist)
+        AudiologyAssistantList = New List(Of AudiologyAssistant)
+        PersonnelList = New List(Of Personnel)
+
         If MyAudiologyReception Is Nothing Then
             MsgBox("No audiology reception selected!")
             Exit Sub
@@ -241,12 +248,34 @@ Public Class Modeller
 
         PlannedPatientsList = New List(Of Patient)
 
-        Dim AddedPatients As Integer = 0
+        Dim AddedPatientsOpeningStage As Integer = 0
+        Dim AddedPatientsMainStage As Integer = 0
+
+        Dim OpeningStagePatientCount As Integer = MyAudiologyReception.GetGamSpaces(GamSpaceTypes.AHM).Count
 
         Do
 
+            'Determines if in reception opening stage
+            Dim IsInOpeningStage As Boolean = False
+
+            If AddedPatientsOpeningStage < OpeningStagePatientCount Then
+                IsInOpeningStage = True
+            End If
+
             'Calculating the scheduled time
-            Dim ScheduledTime As Double = AddedPatients * CurrentModelSettings.NewPatientInterval
+            Dim ScheduledTime As Double
+
+            If IsInOpeningStage = True Then
+
+                'Using the standard new patient interval divided by the OpeningStagePatientCount (rounding to whole minutes)
+                ScheduledTime = Math.Round(AddedPatientsOpeningStage * (CurrentModelSettings.AverageUAudTime / OpeningStagePatientCount))
+            Else
+
+                Dim OpeningStageDuration = CurrentModelSettings.AverageUAudTime
+
+                'Using the standard new patient interval (rounding to whole minutes)
+                ScheduledTime = OpeningStageDuration + Math.Round(AddedPatientsMainStage * CurrentModelSettings.NewPatientInterval)
+            End If
 
             'Exiting if closed
             If ScheduledTime > CurrentModelSettings.OpenMinutes Then Exit Do
@@ -283,7 +312,11 @@ Public Class Modeller
             AllPatientList.Add(NewPatient)
 
             'Incrementing the number of patients
-            AddedPatients += 1
+            If IsInOpeningStage = True Then
+                AddedPatientsOpeningStage += 1
+            Else
+                AddedPatientsMainStage += 1
+            End If
 
         Loop
 
@@ -1204,12 +1237,85 @@ Public Class Modeller
         Next
         SpaceTaskDurationStringList.Add("* POT = proportion of personell work time each space type is used (" & CurrentModelSettings.WorkMinutes \ 60 & " hours and " & CurrentModelSettings.WorkMinutes Mod 60 & " minutes). (Closed spaces are not counted.)")
 
+        'Also exporting the scheduled time for each patient
+        Dim TimeSummaryList As New List(Of String)
+        TimeSummaryList.Add("Appointment times:")
+        TimeSummaryList.Add("Patient nr." & vbTab & "Scheduled" & vbTab & "Arrival" & vbTab & "Let in" & vbTab & "Finished" & vbTab & "Duration")
+
+        Dim VisitDurationList As New List(Of Double)
+
+        For Each Patient In AllPatientList
+            Dim ScheduledTime = Patient.ScheduledAppointment
+            Dim ScheduledTimeString As String = ""
+            If ScheduledTime < TimeSpan.Zero Then ScheduledTimeString = "-"
+            ScheduledTimeString &= ScheduledTime.ToString("hh\:mm\:ss")
+
+            Dim ArrivalTime = Patient.ActivityList.First.StartTime
+            Dim ArrivalTimeString As String = ""
+            If ArrivalTime < TimeSpan.Zero Then ArrivalTimeString = "-"
+            ArrivalTimeString &= ArrivalTime.ToString("hh\:mm\:ss")
+
+            Dim LetInTimeString As String = "[not yet]"
+
+            Dim LetInTime As TimeSpan
+            For Each Activity In Patient.ActivityList
+                If Activity.ActivityType = PatientActivity.PatientActivityTypes.Intervju Then
+                    LetInTime = Activity.StartTime
+                    If LetInTime < TimeSpan.Zero Then
+                        LetInTimeString = "-"
+                    Else
+                        LetInTimeString = ""
+                    End If
+                    LetInTimeString &= LetInTime.ToString("hh\:mm\:ss")
+                    Exit For
+                End If
+            Next
+
+            Dim LeaveTimeString As String = "[not yet]"
+            Dim DurationTimeString As String = "[not yet]"
+
+            If Patient.ActivityList.Last.ActivityType = PatientActivity.PatientActivityTypes.Hemgång Then
+                Dim LeaveTime = Patient.ActivityList.Last.StartTime
+                If LeaveTime < TimeSpan.Zero Then
+                    LeaveTimeString = "-"
+                Else
+                    LeaveTimeString = ""
+                End If
+                LeaveTimeString &= LeaveTime.ToString("hh\:mm\:ss")
+
+                Dim VisitDuration = LeaveTime - LetInTime
+                DurationTimeString = VisitDuration.ToString("hh\:mm\:ss")
+                VisitDurationList.Add(VisitDuration.TotalMinutes)
+            End If
+
+            TimeSummaryList.Add(Patient.ID & vbTab & ScheduledTime.ToString("hh\:mm\:ss") & vbTab & ArrivalTimeString & vbTab & LetInTimeString & vbTab & LeaveTimeString & vbTab & DurationTimeString)
+        Next
+
+        Dim VisitDurationAverageString As String = ""
+        If VisitDurationList.Count > 0 Then
+            VisitDurationAverageString = "Average appointment duration (minutes): " & Math.Round(VisitDurationList.Average(), 1)
+        Else
+            VisitDurationAverageString = "Average appointment duration (minutes): --- "
+        End If
+
+        Dim VisitDurationMaxString As String = ""
+        If VisitDurationList.Count > 0 Then
+            VisitDurationMaxString = "Longest appointment duration (minutes): " & Math.Round(VisitDurationList.Max(), 1)
+        Else
+            VisitDurationMaxString = "Longest appointment duration (minutes): --- "
+        End If
+
         StatisticsTextBox.Text = String.Join(vbCrLf, PatientActivityDurationStringList) &
             vbCrLf & vbCrLf &
             String.Join(vbCrLf, PersonnelTaskDurationStringList) &
             vbCrLf & vbCrLf &
-            String.Join(vbCrLf, SpaceTaskDurationStringList)
-
+            String.Join(vbCrLf, SpaceTaskDurationStringList) &
+            vbCrLf & vbCrLf &
+            String.Join(vbCrLf, TimeSummaryList) &
+            vbCrLf & vbCrLf &
+             VisitDurationAverageString &
+             vbCrLf & vbCrLf &
+             VisitDurationMaxString
 
     End Sub
 
@@ -1225,6 +1331,10 @@ Public Class Modeller
     End Sub
 
     Private Sub ClearModeler()
+
+        Patient.ResetIdAssignments()
+        AudiologyAssistant.ResetIdAssignments()
+        Audiologist.ResetIdAssignments()
 
         StartModelling_Button.Enabled = True
         StopSimulationButton.Enabled = False

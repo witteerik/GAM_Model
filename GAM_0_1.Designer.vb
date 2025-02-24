@@ -66,11 +66,13 @@ Partial Class GAM_0_1
         Table1 = New Table()
         HorizontalWall1 = New HorizontalWall()
         VerticalWall1 = New VerticalWall()
+        Table9 = New Table()
         MyAudiologyReception.SuspendLayout()
         SuspendLayout()
         ' 
         ' MyAudiologyReception
         ' 
+        MyAudiologyReception.Controls.Add(Table9)
         MyAudiologyReception.Controls.Add(Table8)
         MyAudiologyReception.Controls.Add(Table7)
         MyAudiologyReception.Controls.Add(Table6)
@@ -340,7 +342,7 @@ Partial Class GAM_0_1
         GamSpace11.Location = New Point(792, 12)
         GamSpace11.Name = "GamSpace11"
         GamSpace11.NeedsCleaning = False
-        GamSpace11.Size = New Size(120, 111)
+        GamSpace11.Size = New Size(78, 111)
         GamSpace11.SpaceName = ""
         GamSpace11.SpaceType = GamSpaceTypes.MHM
         GamSpace11.TabIndex = 26
@@ -567,6 +569,14 @@ Partial Class GAM_0_1
         VerticalWall1.Size = New Size(5, 56)
         VerticalWall1.TabIndex = 2
         ' 
+        ' Table9
+        ' 
+        Table9.BackColor = Color.FromArgb(CByte(255), CByte(224), CByte(192))
+        Table9.Location = New Point(876, 12)
+        Table9.Name = "Table9"
+        Table9.Size = New Size(33, 111)
+        Table9.TabIndex = 54
+        ' 
         ' GAM_0_1
         ' 
         AutoScaleDimensions = New SizeF(7F, 15F)
@@ -624,4 +634,5 @@ Partial Class GAM_0_1
     Friend WithEvents Table6 As Table
     Friend WithEvents Table5 As Table
     Friend WithEvents Table4 As Table
+    Friend WithEvents Table9 As Table
 End Class

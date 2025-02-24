@@ -74,7 +74,7 @@ Public Class ModelSettings
     ''' </summary>
     ''' <returns></returns>
     <PropertyDescription("The time in seconds that each timer tick / model update represents")>
-    Public Property TickScale As Double = 1
+    Public Property TickScale As Double = 10
 
     ''' <summary>
     ''' The speed of the model. If SpeedUpFactor is set to 1, simulation will happen in real-time. Maximum is 1000
@@ -138,8 +138,8 @@ Public Class ModelSettings
     ''' The number of minutes between each new patiented
     ''' </summary>
     ''' <returns></returns>
-    <PropertyDescription("The number of minutes between each new patiented")>
-    Public Property NewPatientInterval As Double = 5
+    <PropertyDescription("The number of minutes between each new patient")>
+    Public Property NewPatientInterval As Double = 6
 
     ''' <summary>
     ''' The number of minutes that patients typically arrive before their appointment

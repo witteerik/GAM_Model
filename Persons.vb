@@ -105,6 +105,9 @@ Public Class Patient
 
     End Sub
 
+    Public Shared Sub ResetIdAssignments()
+        LastUsedID = 0
+    End Sub
 
 End Class
 
@@ -225,6 +228,10 @@ Public Class Audiologist
         Return "A" & ID.ToString()
     End Function
 
+    Public Shared Sub ResetIdAssignments()
+        LastUsedID = 0
+    End Sub
+
 End Class
 
 Public Class AudiologyAssistant
@@ -257,6 +264,10 @@ Public Class AudiologyAssistant
     Public Shadows Function ToString()
         Return "U" & ID.ToString()
     End Function
+
+    Public Shared Sub ResetIdAssignments()
+        LastUsedID = 0
+    End Sub
 
 End Class
 

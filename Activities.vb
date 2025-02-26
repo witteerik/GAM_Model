@@ -67,7 +67,7 @@ Public Class PersonnelTask
         Intervju = 1
         Rengöring = 2
         AHM_Start = 3 ' This includes helping the patient get started with UAud, and possibly instructions
-        AHM_Avslut = 4 ' This may include aving and printing the test results (optimally this should be fully atomatized)
+        AHM_Avslut = 4 ' This may include saving and printing the test results (optimally this should be fully atomatized)
         AHM_kvalitetsbedömning = 5
         MHM = 6
         Rådgivning = 7

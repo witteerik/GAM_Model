@@ -37,6 +37,9 @@ Public Class Modeller
         Dim NewGAM2 As IAudiologyReceptionForm = New GAM_0_2
         Reception_ComboBox.Items.Add(NewGAM2.ToString)
 
+        Dim NewGAM3 As IAudiologyReceptionForm = New GAM_0_3
+        Reception_ComboBox.Items.Add(NewGAM3.ToString)
+
         'These should be selected and loaded from file
         CurrentModelSettings = New ModelSettings
 
@@ -132,11 +135,14 @@ Public Class Modeller
         'This pice of silly code, exist only because the ComboBox does not display ToString method correctly! Maybe a .NET 8 bug?
         Dim NewGAM1 As IAudiologyReceptionForm = New GAM_0_1
         Dim NewGAM2 As IAudiologyReceptionForm = New GAM_0_2
+        Dim NewGAM3 As IAudiologyReceptionForm = New GAM_0_3
 
         If Reception_ComboBox.SelectedItem = NewGAM1.ToString Then
             MyAudiologyReceptionForm = NewGAM1
         ElseIf Reception_ComboBox.SelectedItem = NewGAM2.ToString Then
             MyAudiologyReceptionForm = NewGAM2
+        ElseIf Reception_ComboBox.SelectedItem = NewGAM3.ToString Then
+            MyAudiologyReceptionForm = NewGAM3
         Else
             Throw New Exception("This is a bug! The selected audiology reception cannot be found")
         End If
@@ -1314,6 +1320,61 @@ Public Class Modeller
             VisitDurationMaxString = "Longest appointment duration (minutes): --- "
         End If
 
+        'Exporting the number of tasks per personnel (excluding zero duration "Tillgänglig" / Available)
+        Dim TaskCountList As New List(Of String)
+        TaskCountList.Add("PERSONNEL TASK COUNT")
+        TaskCountList.Add("Personell" & vbTab & "Count")
+        For Each Audiologist In AudiologistList
+            Dim TaskCount As Integer = 0
+            For Each Task In Audiologist.TaskList
+                'Skipping if type is available/Tillgänglig without a duration
+                If Task.TaskType = PersonnelTask.PersonnelTaskTypes.Tillgänglig And Task.Duration = TimeSpan.Zero Then Continue For
+                'Incrementing the counter
+                TaskCount += 1
+            Next
+            TaskCountList.Add("Audiologist " & Audiologist.ID & vbTab & TaskCount)
+        Next
+        For Each AudiologyAssistant In AudiologyAssistantList
+            Dim TaskCount As Integer = 0
+            For Each Task In AudiologyAssistant.TaskList
+                'Skipping if type is available/Tillgänglig without a duration
+                If Task.TaskType = PersonnelTask.PersonnelTaskTypes.Tillgänglig And Task.Duration = TimeSpan.Zero Then Continue For
+                'Incrementing the counter
+                TaskCount += 1
+            Next
+            TaskCountList.Add("Assistant " & AudiologyAssistant.ID & vbTab & TaskCount)
+        Next
+
+        'Exporting also all personnel task times
+        Dim TaskTimes As New List(Of String)
+        TaskTimes.Add("PERSONNEL TASK TIMES")
+        TaskTimes.Add("Personell" & vbTab & "Start" & vbTab & "Duration" & vbTab & "Task")
+        For Each Audiologist In AudiologistList
+            TaskTimes.Add("")
+            For Each Task In Audiologist.TaskList
+
+                'Skipping if type is available/Tillgänglig without a duration
+                If Task.TaskType = PersonnelTask.PersonnelTaskTypes.Tillgänglig And Task.Duration = TimeSpan.Zero Then Continue For
+
+                Dim StartTimePrefix As String = ""
+                If Task.StartTime < TimeSpan.Zero Then StartTimePrefix = "-"
+                TaskTimes.Add("Audiologist " & Audiologist.ID & vbTab & StartTimePrefix & Task.StartTime.ToString("hh\:mm\:ss") & vbTab & Task.Duration.ToString("hh\:mm\:ss") & vbTab & Task.TaskType.ToString)
+            Next
+        Next
+        For Each AudiologyAssistant In AudiologyAssistantList
+            TaskTimes.Add("")
+            For Each Task In AudiologyAssistant.TaskList
+
+                'Skipping if type is available/Tillgänglig without a duration
+                If Task.TaskType = PersonnelTask.PersonnelTaskTypes.Tillgänglig And Task.Duration = TimeSpan.Zero Then Continue For
+
+                Dim StartTimePrefix As String = ""
+                If Task.StartTime < TimeSpan.Zero Then StartTimePrefix = "-"
+                TaskTimes.Add("Assistant " & AudiologyAssistant.ID & vbTab & StartTimePrefix & Task.StartTime.ToString("hh\:mm\:ss") & vbTab & Task.Duration.ToString("hh\:mm\:ss") & vbTab & Task.TaskType.ToString)
+            Next
+        Next
+
+
         StatisticsTextBox.Text = String.Join(vbCrLf, PatientActivityDurationStringList) &
             vbCrLf & vbCrLf &
             String.Join(vbCrLf, PersonnelTaskDurationStringList) &
@@ -1326,7 +1387,11 @@ Public Class Modeller
             vbCrLf & vbCrLf &
              VisitDurationAverageString &
              vbCrLf & vbCrLf &
-             VisitDurationMaxString
+             VisitDurationMaxString &
+             vbCrLf & vbCrLf &
+            String.Join(vbCrLf, TaskCountList) &
+             vbCrLf & vbCrLf &
+            String.Join(vbCrLf, TaskTimes)
 
     End Sub
 

@@ -23,6 +23,7 @@ Partial Class GAM_0_1
     <System.Diagnostics.DebuggerStepThrough()> _
     Private Sub InitializeComponent()
         MyAudiologyReception = New AudiologyReception()
+        Table9 = New Table()
         Table8 = New Table()
         Table7 = New Table()
         Table6 = New Table()
@@ -66,7 +67,6 @@ Partial Class GAM_0_1
         Table1 = New Table()
         HorizontalWall1 = New HorizontalWall()
         VerticalWall1 = New VerticalWall()
-        Table9 = New Table()
         MyAudiologyReception.SuspendLayout()
         SuspendLayout()
         ' 
@@ -121,6 +121,14 @@ Partial Class GAM_0_1
         MyAudiologyReception.Name = "MyAudiologyReception"
         MyAudiologyReception.Size = New Size(1357, 772)
         MyAudiologyReception.TabIndex = 0
+        ' 
+        ' Table9
+        ' 
+        Table9.BackColor = Color.FromArgb(CByte(255), CByte(224), CByte(192))
+        Table9.Location = New Point(876, 12)
+        Table9.Name = "Table9"
+        Table9.Size = New Size(33, 111)
+        Table9.TabIndex = 54
         ' 
         ' Table8
         ' 
@@ -197,6 +205,7 @@ Partial Class GAM_0_1
         ' GamSpace19
         ' 
         GamSpace19.BorderStyle = BorderStyle.FixedSingle
+        GamSpace19.HighestNumberOfPersons = 0
         GamSpace19.IsClosed = False
         GamSpace19.Location = New Point(531, 12)
         GamSpace19.Name = "GamSpace19"
@@ -219,6 +228,7 @@ Partial Class GAM_0_1
         ' GamSpace18
         ' 
         GamSpace18.BorderStyle = BorderStyle.FixedSingle
+        GamSpace18.HighestNumberOfPersons = 0
         GamSpace18.IsClosed = False
         GamSpace18.Location = New Point(1146, 459)
         GamSpace18.Name = "GamSpace18"
@@ -233,6 +243,7 @@ Partial Class GAM_0_1
         ' GamSpace17
         ' 
         GamSpace17.BorderStyle = BorderStyle.FixedSingle
+        GamSpace17.HighestNumberOfPersons = 0
         GamSpace17.IsClosed = False
         GamSpace17.Location = New Point(940, 12)
         GamSpace17.Name = "GamSpace17"
@@ -262,6 +273,7 @@ Partial Class GAM_0_1
         ' 
         ' GamSpace16
         ' 
+        GamSpace16.HighestNumberOfPersons = 0
         GamSpace16.IsClosed = False
         GamSpace16.Location = New Point(405, 381)
         GamSpace16.Name = "GamSpace16"
@@ -275,6 +287,7 @@ Partial Class GAM_0_1
         ' 
         ' GamSpace15
         ' 
+        GamSpace15.HighestNumberOfPersons = 0
         GamSpace15.IsClosed = False
         GamSpace15.Location = New Point(405, 264)
         GamSpace15.Name = "GamSpace15"
@@ -289,6 +302,7 @@ Partial Class GAM_0_1
         ' GamSpace14
         ' 
         GamSpace14.BorderStyle = BorderStyle.FixedSingle
+        GamSpace14.HighestNumberOfPersons = 0
         GamSpace14.IsClosed = False
         GamSpace14.Location = New Point(843, 159)
         GamSpace14.Name = "GamSpace14"
@@ -303,6 +317,7 @@ Partial Class GAM_0_1
         ' GamSpace13
         ' 
         GamSpace13.BorderStyle = BorderStyle.FixedSingle
+        GamSpace13.HighestNumberOfPersons = 0
         GamSpace13.IsClosed = False
         GamSpace13.Location = New Point(219, 12)
         GamSpace13.Name = "GamSpace13"
@@ -317,6 +332,7 @@ Partial Class GAM_0_1
         ' GamSpace12
         ' 
         GamSpace12.BorderStyle = BorderStyle.FixedSingle
+        GamSpace12.HighestNumberOfPersons = 0
         GamSpace12.IsClosed = False
         GamSpace12.Location = New Point(219, 663)
         GamSpace12.Name = "GamSpace12"
@@ -338,6 +354,7 @@ Partial Class GAM_0_1
         ' 
         ' GamSpace11
         ' 
+        GamSpace11.HighestNumberOfPersons = 0
         GamSpace11.IsClosed = False
         GamSpace11.Location = New Point(792, 12)
         GamSpace11.Name = "GamSpace11"
@@ -351,6 +368,7 @@ Partial Class GAM_0_1
         ' 
         ' GamSpace10
         ' 
+        GamSpace10.HighestNumberOfPersons = 0
         GamSpace10.IsClosed = False
         GamSpace10.Location = New Point(792, 622)
         GamSpace10.Name = "GamSpace10"
@@ -364,6 +382,7 @@ Partial Class GAM_0_1
         ' 
         ' GamSpace9
         ' 
+        GamSpace9.HighestNumberOfPersons = 0
         GamSpace9.IsClosed = False
         GamSpace9.Location = New Point(792, 494)
         GamSpace9.Name = "GamSpace9"
@@ -393,6 +412,7 @@ Partial Class GAM_0_1
         ' 
         ' GamSpace8
         ' 
+        GamSpace8.HighestNumberOfPersons = 0
         GamSpace8.IsClosed = False
         GamSpace8.Location = New Point(792, 366)
         GamSpace8.Name = "GamSpace8"
@@ -454,6 +474,7 @@ Partial Class GAM_0_1
         ' 
         ' GamSpace7
         ' 
+        GamSpace7.HighestNumberOfPersons = 0
         GamSpace7.IsClosed = False
         GamSpace7.Location = New Point(48, 170)
         GamSpace7.Name = "GamSpace7"
@@ -467,6 +488,7 @@ Partial Class GAM_0_1
         ' 
         ' GamSpace6
         ' 
+        GamSpace6.HighestNumberOfPersons = 0
         GamSpace6.IsClosed = False
         GamSpace6.Location = New Point(48, 283)
         GamSpace6.Name = "GamSpace6"
@@ -480,6 +502,7 @@ Partial Class GAM_0_1
         ' 
         ' GamSpace5
         ' 
+        GamSpace5.HighestNumberOfPersons = 0
         GamSpace5.IsClosed = False
         GamSpace5.Location = New Point(48, 396)
         GamSpace5.Name = "GamSpace5"
@@ -493,6 +516,7 @@ Partial Class GAM_0_1
         ' 
         ' GamSpace4
         ' 
+        GamSpace4.HighestNumberOfPersons = 0
         GamSpace4.IsClosed = False
         GamSpace4.Location = New Point(48, 509)
         GamSpace4.Name = "GamSpace4"
@@ -506,6 +530,7 @@ Partial Class GAM_0_1
         ' 
         ' GamSpace3
         ' 
+        GamSpace3.HighestNumberOfPersons = 0
         GamSpace3.IsClosed = False
         GamSpace3.Location = New Point(48, 622)
         GamSpace3.Name = "GamSpace3"
@@ -520,6 +545,7 @@ Partial Class GAM_0_1
         ' GamSpace2
         ' 
         GamSpace2.AutoSizeMode = AutoSizeMode.GrowAndShrink
+        GamSpace2.HighestNumberOfPersons = 0
         GamSpace2.IsClosed = False
         GamSpace2.Location = New Point(48, 57)
         GamSpace2.Name = "GamSpace2"
@@ -534,6 +560,7 @@ Partial Class GAM_0_1
         ' GamSpace1
         ' 
         GamSpace1.BorderStyle = BorderStyle.FixedSingle
+        GamSpace1.HighestNumberOfPersons = 0
         GamSpace1.IsClosed = False
         GamSpace1.Location = New Point(940, 459)
         GamSpace1.Name = "GamSpace1"
@@ -568,14 +595,6 @@ Partial Class GAM_0_1
         VerticalWall1.Name = "VerticalWall1"
         VerticalWall1.Size = New Size(5, 56)
         VerticalWall1.TabIndex = 2
-        ' 
-        ' Table9
-        ' 
-        Table9.BackColor = Color.FromArgb(CByte(255), CByte(224), CByte(192))
-        Table9.Location = New Point(876, 12)
-        Table9.Name = "Table9"
-        Table9.Size = New Size(33, 111)
-        Table9.TabIndex = 54
         ' 
         ' GAM_0_1
         ' 

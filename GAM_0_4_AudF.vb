@@ -1,4 +1,4 @@
-﻿Public Class GAM_0_1
+﻿Public Class GAM_0_4_AudF
     Implements IAudiologyReceptionForm
 
     Public Property AudiologyReception As AudiologyReception Implements IAudiologyReceptionForm.AudiologyReception
@@ -10,25 +10,31 @@
         End Set
     End Property
 
-    Private Sub GAM_0_1_Load(sender As Object, e As EventArgs) Handles MyBase.Load
+    Private Sub GAM_0_4_AudF_Load(sender As Object, e As EventArgs) Handles MyBase.Load
 
     End Sub
 
     Private Sub IAudiologyReceptionForm_Show() Implements IAudiologyReceptionForm.Show
-        Me.Show()
+        Show()
     End Sub
 
     Private Sub IAudiologyReceptionForm_Close() Implements IAudiologyReceptionForm.Close
-        Me.Close()
+        Close()
     End Sub
 
-    Public Overrides Function ToString() As String Implements IAudiologyReceptionForm.ToString
+    Private Function IAudiologyReceptionForm_ToString() As String Implements IAudiologyReceptionForm.ToString
         Return Me.Text
     End Function
 
-    Private Sub MyAudiologyReception_Paint(sender As Object, e As PaintEventArgs) Handles MyAudiologyReception.Paint
+    Private Sub GamSpace16_Paint(sender As Object, e As PaintEventArgs) Handles GamSpace16.Paint
+
+    End Sub
+
+    Private Sub PictureBox1_Click(sender As Object, e As EventArgs)
+
+    End Sub
+
+    Private Sub GamSpace12_Paint(sender As Object, e As PaintEventArgs) Handles GamSpace12.Paint
 
     End Sub
 End Class
-
-

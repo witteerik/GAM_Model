@@ -40,6 +40,9 @@ Public Class Modeller
         Dim NewGAM3 As IAudiologyReceptionForm = New GAM_0_3
         Reception_ComboBox.Items.Add(NewGAM3.ToString)
 
+        Dim NewGAM4 As IAudiologyReceptionForm = New GAM_0_4_AudF
+        Reception_ComboBox.Items.Add(NewGAM4.ToString)
+
         'These should be selected and loaded from file
         CurrentModelSettings = New ModelSettings
 
@@ -136,6 +139,7 @@ Public Class Modeller
         Dim NewGAM1 As IAudiologyReceptionForm = New GAM_0_1
         Dim NewGAM2 As IAudiologyReceptionForm = New GAM_0_2
         Dim NewGAM3 As IAudiologyReceptionForm = New GAM_0_3
+        Dim NewGAM4 As IAudiologyReceptionForm = New GAM_0_4_AudF
 
         If Reception_ComboBox.SelectedItem = NewGAM1.ToString Then
             MyAudiologyReceptionForm = NewGAM1
@@ -143,6 +147,8 @@ Public Class Modeller
             MyAudiologyReceptionForm = NewGAM2
         ElseIf Reception_ComboBox.SelectedItem = NewGAM3.ToString Then
             MyAudiologyReceptionForm = NewGAM3
+        ElseIf Reception_ComboBox.SelectedItem = NewGAM4.ToString Then
+            MyAudiologyReceptionForm = NewGAM4
         Else
             Throw New Exception("This is a bug! The selected audiology reception cannot be found")
         End If

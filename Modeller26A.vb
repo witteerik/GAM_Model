@@ -317,6 +317,14 @@ Public Class Modeller26A
                 NewPatient.NeedManualPTA = False
             End If
 
+            'Randomizing a probability that the patient will need to take manual PTA after UAud
+            Dim BernoulliSample_HelpPresser = MathNet.Numerics.Distributions.Bernoulli.Sample(Randomizer, CurrentModelSettings.HelpPresserProportion)
+            If BernoulliSample_HelpPresser = 1 Then
+                NewPatient.IsHelpPresser = True
+            Else
+                NewPatient.IsHelpPresser = False
+            End If
+
             'Adding the patient
             PlannedPatientsList.Add(NewPatient)
 
@@ -527,28 +535,132 @@ Public Class Modeller26A
 
                 Select Case LatestActivity.ActivityType
 
-                    Case PatientActivity.PatientActivityTypes.MHM
+                    Case PatientActivity.PatientActivityTypes.Kö_AHM
 
-                        'Placing the patient in the queue to conselling
+                        'Checking if UAud can be started. 
+                        'This is the highest priority task, it was moved to first position in Modeller 26A (it was previously further down in the list but still had the highest priority in GAM pilots VT25)
 
-                        Dim AvailabilityCheckResult = AvailablePlaceRequest(GamSpaceTypes.Kö_Rådgivning)
+                        Dim AvailabilityCheckResult = AvailablePlaceAndPersonnelRequest(GamSpaceTypes.AHM, PersonnelType.Any)
                         If AvailabilityCheckResult IsNot Nothing Then
 
-                            'Placing patient in the queue to conselling
-                            Patient.ActivityList.Add(New PatientActivity With {.ActivityType = PatientActivity.PatientActivityTypes.Kö_rådgivning, .StartTime = CurrentTime})
-                            MyAudiologyReception.MovePersonToSpace(Patient, AvailabilityCheckResult)
+                            'Setting the wait activity to completed
+                            Patient.GetLastStartedActivity.SetToCompleted(CurrentTime)
 
-                            'Releasing the audiologist, setting it's activity to idle and disconnecting it from the patient
+                            'Randomizing a planned test time
+                            Dim UAudDuration = RandomizePatientActivityDuration(PatientActivity.PatientActivityTypes.AHM)
 
-                            'Timing the last task by setting it's duration
-                            If Patient.Personnel.GetCurrentTask.HasDurationValue = False Then
-                                Patient.Personnel.GetCurrentTask.Duration = CurrentTime - Patient.Personnel.GetCurrentTask.StartTime
+                            'Adding the new activity (UAud) in the patient
+                            Patient.ActivityList.Add(New PatientActivity With {.ActivityType = PatientActivity.PatientActivityTypes.AHM, .StartTime = CurrentTime, .Duration = UAudDuration, .HasDurationValue = True})
+
+                            'Moving the patient to the UAud space
+                            MyAudiologyReception.MovePersonToSpace(Patient, AvailabilityCheckResult.Item1)
+
+                            'Randomizing a time for the personell to instruct and start off the patient with UAud
+                            Dim UAudStartHelpDuration = RandomizePersonnelTaskDuration(PersonnelTask.PersonnelTaskTypes.AHM_Start)
+
+                            'Getting a reference to the personell
+                            Dim Personnel = AvailabilityCheckResult.Item2
+
+                            'Timing the last personell task by setting it's duration
+                            If Personnel.GetCurrentTask.HasDurationValue = False Then
+                                Personnel.GetCurrentTask.Duration = CurrentTime - Personnel.GetCurrentTask.StartTime
                             End If
 
-                            Patient.Personnel.TaskList.Add(New PersonnelTask With {.TaskType = PersonnelTask.PersonnelTaskTypes.Tillgänglig, .StartTime = CurrentTime})
-                            Patient.Personnel = Nothing
+                            'Adding the new task (starting the patient off with UAud) to the personell's task list
+                            Personnel.TaskList.Add(New PersonnelTask With {.TaskType = PersonnelTask.PersonnelTaskTypes.AHM_Start, .StartTime = CurrentTime, .Duration = UAudStartHelpDuration, .HasDurationValue = True})
+
+                            'Moving the personell to the UAud space
+                            MyAudiologyReception.MovePersonToSpace(AvailabilityCheckResult.Item2, AvailabilityCheckResult.Item1)
 
                         End If
+
+                        'If AvailabilityCheckResult is Nothing, the patient will remain in the queue
+
+
+#Region "Counselling block" ' A block means that the patient and personnel are locked to each other throughout coupled activities
+
+                    Case PatientActivity.PatientActivityTypes.Kö_rådgivning
+
+                        'Checking if counseling can be started
+
+                        Dim AvailabilityCheckResult = AvailablePlaceAndPersonnelRequest(GamSpaceTypes.Samtalsrum, PersonnelType.Audiologist)
+                        If AvailabilityCheckResult IsNot Nothing Then
+
+                            'Setting the patient's wait activity to completed
+                            Patient.GetLastStartedActivity.SetToCompleted(CurrentTime)
+
+                            'Randomizing a duration for the patient councelling
+                            Dim Duration = RandomizePatientActivityDuration(PatientActivity.PatientActivityTypes.Rådgivning)
+
+                            'Adding the new activity (Councelling) in the patient
+                            Patient.ActivityList.Add(New PatientActivity With {.ActivityType = PatientActivity.PatientActivityTypes.Rådgivning, .StartTime = CurrentTime, .Duration = Duration, .HasDurationValue = True})
+
+                            'Moving the patient to the Councelling space
+                            MyAudiologyReception.MovePersonToSpace(Patient, AvailabilityCheckResult.Item1)
+
+                            'Locking the audiologist to the patient
+                            Patient.Personnel = AvailabilityCheckResult.Item2
+
+                            'Getting a reference to the audiologist
+                            Dim Personnel = AvailabilityCheckResult.Item2
+
+                            'Timing the last task by setting it's duration
+                            If Personnel.GetCurrentTask.HasDurationValue = False Then
+                                Personnel.GetCurrentTask.Duration = CurrentTime - Personnel.GetCurrentTask.StartTime
+                            End If
+
+                            'Adding the new task (councelling) to the audiologist's task list
+                            Personnel.TaskList.Add(New PersonnelTask With {.TaskType = PersonnelTask.PersonnelTaskTypes.Rådgivning, .StartTime = CurrentTime, .Duration = Duration, .HasDurationValue = True})
+
+                            'Moving the audiologist to the councelling space
+                            MyAudiologyReception.MovePersonToSpace(AvailabilityCheckResult.Item2, AvailabilityCheckResult.Item1)
+
+                        End If
+
+                        'If AvailabilityCheckResult is Nothing, the patient will remain in the queue
+
+
+                    Case PatientActivity.PatientActivityTypes.Rådgivning
+
+                        'Councelling is finished
+                        'The patient is ready and can go home
+                        Patient.VisitCompleted = True
+
+                        'The audiologist that performed the councelling now does documentation
+                        Dim AvailabilityCheckResult = AvailablePlaceRequest(GamSpaceTypes.Journaldatorplatser)
+                        If AvailabilityCheckResult IsNot Nothing Then
+
+                            'N.B. There is no limit on work places here. But every personell should have their own computer/office space
+
+                            'Audiologist starts documentation
+                            'Getting a reference to the audiologist
+                            Dim CounsellingAudiologist As Audiologist = Patient.Personnel
+
+                            'Randomizing a duration for the documentation
+                            Dim DocumentationDuration = RandomizePersonnelTaskDuration(PersonnelTask.PersonnelTaskTypes.Journal)
+
+                            'Timing the last task by setting it's duration
+                            If CounsellingAudiologist.GetCurrentTask.HasDurationValue = False Then
+                                CounsellingAudiologist.GetCurrentTask.Duration = CurrentTime - CounsellingAudiologist.GetCurrentTask.StartTime
+                            End If
+
+                            'Adding the new task (patient records/documentation) to the audiologist's task list
+                            CounsellingAudiologist.TaskList.Add(New PersonnelTask With {.TaskType = PersonnelTask.PersonnelTaskTypes.Journal, .StartTime = CurrentTime, .Duration = DocumentationDuration, .HasDurationValue = True})
+
+                            'Moving the audiologist to the computer/office space
+                            MyAudiologyReception.MovePersonToSpace(CounsellingAudiologist, AvailabilityCheckResult)
+
+                            'Releasing the audiologist from the patient
+                            Patient.Personnel = Nothing
+
+                        Else
+                            Throw New Exception("Out of office places for audiologists! This will not work without a queue to descs.")
+                        End If
+
+#End Region
+
+
+#Region "MHM block" ' A block means that the patient and personnel are locked to each other throughout coupled activities
 
                     Case PatientActivity.PatientActivityTypes.Kö_MHM
 
@@ -560,16 +672,19 @@ Public Class Modeller26A
                             'Setting the wait activity to completed
                             Patient.GetLastStartedActivity.SetToCompleted(CurrentTime)
 
+                            'Randomizing a duration for the manual audiometry
                             Dim Duration = RandomizePatientActivityDuration(PatientActivity.PatientActivityTypes.MHM)
 
-                            'Noting this is the patient
+                            'Adding the new activity (manual audiometry) in the patient
                             Patient.ActivityList.Add(New PatientActivity With {.ActivityType = PatientActivity.PatientActivityTypes.MHM, .StartTime = CurrentTime, .Duration = Duration, .HasDurationValue = True})
+
+                            'Moving the patient to the sound booth for manual audiometry
                             MyAudiologyReception.MovePersonToSpace(Patient, AvailabilityCheckResult.Item1)
 
                             'Locking the audiologist to the patient
                             Patient.Personnel = AvailabilityCheckResult.Item2
 
-                            'And in the audiologist
+                            'Getting a reference to the audiologist
                             Dim Personnel = AvailabilityCheckResult.Item2
 
                             'Timing the last task by setting it's duration
@@ -577,73 +692,140 @@ Public Class Modeller26A
                                 Personnel.GetCurrentTask.Duration = CurrentTime - Personnel.GetCurrentTask.StartTime
                             End If
 
+                            'Adding the new task (manual audiometry) to the audiologist's task list
                             Personnel.TaskList.Add(New PersonnelTask With {.TaskType = PersonnelTask.PersonnelTaskTypes.MHM, .StartTime = CurrentTime, .Duration = Duration, .HasDurationValue = True})
+
+                            'Moving the audiologist to the sound booth for manual audiometry
                             MyAudiologyReception.MovePersonToSpace(AvailabilityCheckResult.Item2, AvailabilityCheckResult.Item1)
 
                         End If
 
                         'If AvailabilityCheckResult is Nothing, the patient will remain in the queue
 
-                    Case PatientActivity.PatientActivityTypes.Rådgivning
 
-                        'The patient is ready and can go home
-                        Patient.VisitCompleted = True
+                    Case PatientActivity.PatientActivityTypes.MHM
 
-                        Dim AvailabilityCheckResult = AvailablePlaceRequest(GamSpaceTypes.Journaldatorplatser)
+                        'Manual audiometry is completed. At this stage the patient will have a "locked on" audiologist
+                        ' and he/she will put the patient in queue to conselling
+
+                        Dim AvailabilityCheckResult = AvailablePlaceRequest(GamSpaceTypes.Kö_Rådgivning)
                         If AvailabilityCheckResult IsNot Nothing Then
 
-                            'N.B. There is no limit on work places here. But every personell should have their own computer/work place
+                            'Placing patient in the queue to conselling
+                            'Adding the new activity (queuing for concelling) in the patient
+                            Patient.ActivityList.Add(New PatientActivity With {.ActivityType = PatientActivity.PatientActivityTypes.Kö_rådgivning, .StartTime = CurrentTime})
 
-                            'Audiologist starts documentation
-                            Dim CounsellingAudiologist As Audiologist = Patient.Personnel
+                            'Moving the patient to the queue to concelling
+                            MyAudiologyReception.MovePersonToSpace(Patient, AvailabilityCheckResult)
 
-                            Dim DocumentationDuration = RandomizePersonnelTaskDuration(PersonnelTask.PersonnelTaskTypes.Journal)
+                            'Releasing the audiologist, setting it's activity to idle and disconnecting it from the patient
 
                             'Timing the last task by setting it's duration
-                            If CounsellingAudiologist.GetCurrentTask.HasDurationValue = False Then
-                                CounsellingAudiologist.GetCurrentTask.Duration = CurrentTime - CounsellingAudiologist.GetCurrentTask.StartTime
+                            If Patient.Personnel.GetCurrentTask.HasDurationValue = False Then
+                                Patient.Personnel.GetCurrentTask.Duration = CurrentTime - Patient.Personnel.GetCurrentTask.StartTime
                             End If
 
-                            CounsellingAudiologist.TaskList.Add(New PersonnelTask With {.TaskType = PersonnelTask.PersonnelTaskTypes.Journal, .StartTime = CurrentTime, .Duration = DocumentationDuration, .HasDurationValue = True})
-                            MyAudiologyReception.MovePersonToSpace(CounsellingAudiologist, AvailabilityCheckResult)
+                            'Adding the new task (idle) to the audiologist's task list
+                            Patient.Personnel.TaskList.Add(New PersonnelTask With {.TaskType = PersonnelTask.PersonnelTaskTypes.Tillgänglig, .StartTime = CurrentTime})
 
                             'Releasing the audiologist from the patient
                             Patient.Personnel = Nothing
 
-                        Else
-                            Throw New Exception("Out of office places for audiologists! This will not work without a queue to descs.")
                         End If
 
+#End Region
 
-                    Case PatientActivity.PatientActivityTypes.Kö_rådgivning
+                    Case PatientActivity.PatientActivityTypes.AHM
 
-                        'Checking if counseling can be started
+                        ' In 26A, AHM finished means that AHM is either really finished or the patient has pressed the "I need help" button during the test (at which the test is likely to be aborted).
+                        ' This activity no longer needs personell and can always be performed. It places the patient in que for quality assessment.
+                        ' The activity also does not need a space, since the patient should remain seated in the UAud space (when waiting for quality assessment)
 
-                        Dim AvailabilityCheckResult = AvailablePlaceAndPersonnelRequest(GamSpaceTypes.Samtalsrum, PersonnelType.Audiologist)
+                        'UAud is completed, putting the patient in the queue for UAud quality evaluation
+                        'Adding the new activity (queuing for UAud quality assessment) in the patient
+                        Patient.ActivityList.Add(New PatientActivity With {.ActivityType = PatientActivity.PatientActivityTypes.Kö_AHM_kvalitetsbedömning, .StartTime = CurrentTime})
+
+
+                        'Nothing of the below is longer needed:
+                        ''Checking the availabilty of a personnel that can perform post measuement actions such as save and print results. Meanwhile, the patient remains in the UAud measurement space.
+
+                        'Dim AvailabilityCheckResult = AvailablePersonnelRequest(PersonnelType.Audiologist) ' This was PersonnelType.Any in Modeller25A
+                        'If AvailabilityCheckResult IsNot Nothing Then
+
+                        '    'UAud is finished, performing post measurment administrative tasks
+                        '    Dim Personnel = AvailabilityCheckResult
+                        '    Dim Duration = RandomizePersonnelTaskDuration(PersonnelTask.PersonnelTaskTypes.AHM_Avslut)
+
+                        '    'Moving the personnel to the patient space. (In reality the personnel also have to go to the printer and back to give the results to the patient.)
+                        '    Dim CurrentPatientLocation As GamSpace = Patient.Parent
+                        '    If CurrentPatientLocation IsNot Nothing Then
+                        '        MyAudiologyReception.MovePersonToSpace(AvailabilityCheckResult, CurrentPatientLocation)
+                        '    Else
+                        '        Throw New Exception("The patient is not is a space. This should not happen.")
+                        '    End If
+
+                        '    'Timing the last task by setting it's duration
+                        '    If Personnel.GetCurrentTask.HasDurationValue = False Then
+                        '        Personnel.GetCurrentTask.Duration = CurrentTime - Personnel.GetCurrentTask.StartTime
+                        '    End If
+
+                        '    Personnel.TaskList.Add(New PersonnelTask With {.TaskType = PersonnelTask.PersonnelTaskTypes.AHM_Avslut, .StartTime = CurrentTime, .Duration = Duration, .HasDurationValue = True})
+
+                        '    'Locking the personnel to the patient
+                        '    Patient.Personnel = Personnel
+
+                        '    'UAud is finished, patient gets the task to wait for AHM_Avslut, staying in the same space
+                        '    Patient.ActivityList.Add(New PatientActivity With {.ActivityType = PatientActivity.PatientActivityTypes.AHM_Avslut, .StartTime = CurrentTime, .Duration = Duration, .HasDurationValue = True})
+
+                        'End If
+
+
+                    Case PatientActivity.PatientActivityTypes.Kö_AHM_kvalitetsbedömning
+
+                        'In 26A, AHM_kvalitetsbedömning means that the audiologists goes to the patient and performs quality assessment at the place of UAud
+                        'This means that no other room is needed for this
+                        'As there is no way to distinguish 'Needs help' from 'UAud is finished', this can also mean that the UAud measurement needs to continue or be restarted (which we should avoid).
+                        ' In 26A, the quality assessment involves manual reliability threshold checks, etc.
+
+                        'The patient is in the Queue for UAud evaluation. Checking if UAud evaluation can be done. If not, the patient will remein in the queue.
+                        'Dim AvailabilityCheckResult = AvailablePlaceAndPersonnelRequest(GamSpaceTypes.Samtalsrum, PersonnelType.Audiologist) ' 25A code
+                        Dim AvailabilityCheckResult = AvailablePersonnelRequest(PersonnelType.Audiologist)
+
                         If AvailabilityCheckResult IsNot Nothing Then
 
                             'Setting the wait activity to completed
                             Patient.GetLastStartedActivity.SetToCompleted(CurrentTime)
 
-                            Dim Duration = RandomizePatientActivityDuration(PatientActivity.PatientActivityTypes.Rådgivning)
+                            'Randomizing a duration for the UAud quality assessment
+                            Dim Duration = RandomizePatientActivityDuration(PatientActivity.PatientActivityTypes.AHM_kvalitetsbedömning)
 
-                            'Noting this is the patient
-                            Patient.ActivityList.Add(New PatientActivity With {.ActivityType = PatientActivity.PatientActivityTypes.Rådgivning, .StartTime = CurrentTime, .Duration = Duration, .HasDurationValue = True})
-                            MyAudiologyReception.MovePersonToSpace(Patient, AvailabilityCheckResult.Item1)
+                            'Adding the new activity (UAud quality assessment) in the patient
+                            Patient.ActivityList.Add(New PatientActivity With {.ActivityType = PatientActivity.PatientActivityTypes.AHM_kvalitetsbedömning, .StartTime = CurrentTime, .Duration = Duration, .HasDurationValue = True})
+
+                            '25A code: We now do not move the patient, until after the quality assessment is completed
+                            'MyAudiologyReception.MovePersonToSpace(Patient, AvailabilityCheckResult.Item1)
 
                             'Locking the audiologist to the patient
-                            Patient.Personnel = AvailabilityCheckResult.Item2
+                            Patient.Personnel = AvailabilityCheckResult
 
-                            'And in the audiologist
-                            Dim Personnel = AvailabilityCheckResult.Item2
+                            'Getting a reference to the audiologist
+                            Dim Personnel = AvailabilityCheckResult
 
                             'Timing the last task by setting it's duration
                             If Personnel.GetCurrentTask.HasDurationValue = False Then
                                 Personnel.GetCurrentTask.Duration = CurrentTime - Personnel.GetCurrentTask.StartTime
                             End If
 
-                            Personnel.TaskList.Add(New PersonnelTask With {.TaskType = PersonnelTask.PersonnelTaskTypes.Rådgivning, .StartTime = CurrentTime, .Duration = Duration, .HasDurationValue = True})
-                            MyAudiologyReception.MovePersonToSpace(AvailabilityCheckResult.Item2, AvailabilityCheckResult.Item1)
+                            'Adding the new task (UAud quality assessment) to the audiologist's task list
+                            Personnel.TaskList.Add(New PersonnelTask With {.TaskType = PersonnelTask.PersonnelTaskTypes.AHM_kvalitetsbedömning, .StartTime = CurrentTime, .Duration = Duration, .HasDurationValue = True})
+
+                            'Moving the personnel to the UAud space
+                            Dim CurrentPatientLocation As GamSpace = Patient.Parent
+                            If CurrentPatientLocation IsNot Nothing Then
+                                MyAudiologyReception.MovePersonToSpace(AvailabilityCheckResult, CurrentPatientLocation)
+                            Else
+                                Throw New Exception("The patient is not is a space. This should not happen.")
+                            End If
 
                         End If
 
@@ -652,201 +834,148 @@ Public Class Modeller26A
 
                     Case PatientActivity.PatientActivityTypes.AHM_kvalitetsbedömning
 
-                        'UAud evaluation was finished. Depending on the need for manual PTA, patients either go to manual PTA queue or on to councelling queue
-                        If Patient.NeedManualPTA = False Then
+                        'UAud evaluation was finished.
+                        'Possible outcomes:
+                        ' - The patient needs manual PTA, and goes to the manual PTA queue 
+                        ' - The UAud was sucessfully completed, and goes to the councelling queue
+                        ' - The patient has pressed 'Needs help' with an uncompleted UAud test, and the audiologist thinks it's worth restarting the UAud test (instead of going
+                        '    for a manual test). In this case, the patients continues/restarts the UAud test emmediately
 
-                            'The patient can go on to counselling. 'Placing patient in the queue to conselling
-                            Dim AvailabilityCheckResult = AvailablePlaceRequest(GamSpaceTypes.Kö_Rådgivning)
-                            If AvailabilityCheckResult IsNot Nothing Then
+                        'It is first evaluated if the patient was a help-presser and needs test restart
+                        If Patient.IsHelpPresser = False Then
 
-                                'Placing patient in the queue to conselling
-                                Patient.ActivityList.Add(New PatientActivity With {.ActivityType = PatientActivity.PatientActivityTypes.Kö_rådgivning, .StartTime = CurrentTime})
-                                MyAudiologyReception.MovePersonToSpace(Patient, AvailabilityCheckResult)
+                            'If not, it is evaluated if the patient needs manual PTA or not
+                            If Patient.NeedManualPTA = False Then
 
-                                'Releasing the audiologist, setting it's activity to idle and disconnecting it from the patient
+                                'The patient can go on to counselling. 'Placing patient in the queue to conselling
+                                Dim AvailabilityCheckResult = AvailablePlaceRequest(GamSpaceTypes.Kö_Rådgivning)
+                                If AvailabilityCheckResult IsNot Nothing Then
 
-                                'Timing the last task by setting it's duration
-                                If Patient.Personnel.GetCurrentTask.HasDurationValue = False Then
-                                    Patient.Personnel.GetCurrentTask.Duration = CurrentTime - Patient.Personnel.GetCurrentTask.StartTime
+                                    'Placing patient in the queue to conselling
+                                    'Adding the new activity (queuing for concelling) in the patient
+                                    Patient.ActivityList.Add(New PatientActivity With {.ActivityType = PatientActivity.PatientActivityTypes.Kö_rådgivning, .StartTime = CurrentTime})
+
+                                    ' Moving the patient to the queue for councelling
+                                    MyAudiologyReception.MovePersonToSpace(Patient, AvailabilityCheckResult)
+
+                                    'Releasing the audiologist, setting it's activity to idle and disconnecting it from the patient
+
+                                    'Timing the last task by setting it's duration
+                                    If Patient.Personnel.GetCurrentTask.HasDurationValue = False Then
+                                        Patient.Personnel.GetCurrentTask.Duration = CurrentTime - Patient.Personnel.GetCurrentTask.StartTime
+                                    End If
+
+                                    'Adding the new task (idle) to the audiologist's task list
+                                    Patient.Personnel.TaskList.Add(New PersonnelTask With {.TaskType = PersonnelTask.PersonnelTaskTypes.Tillgänglig, .StartTime = CurrentTime})
+
+                                    'Releasing the audiologist from the patient
+                                    Patient.Personnel = Nothing
+
                                 End If
 
-                                Patient.Personnel.TaskList.Add(New PersonnelTask With {.TaskType = PersonnelTask.PersonnelTaskTypes.Tillgänglig, .StartTime = CurrentTime})
-                                Patient.Personnel = Nothing
+                            Else
 
+                                'The patient needs manual PTA. Placing it in the queue for manual PTA
+                                Dim AvailabilityCheckResult = AvailablePlaceRequest(GamSpaceTypes.Kö_MHM)
+                                If AvailabilityCheckResult IsNot Nothing Then
+
+                                    'The patient need to do manual audiometry, putting the patient in the queue
+                                    'Adding the new activity (queuing for manual audiometry) in the patient
+                                    Patient.ActivityList.Add(New PatientActivity With {.ActivityType = PatientActivity.PatientActivityTypes.Kö_MHM, .StartTime = CurrentTime})
+
+                                    'Moving the patient to the queue for manual audiometry
+                                    MyAudiologyReception.MovePersonToSpace(Patient, AvailabilityCheckResult)
+
+                                    'Releasing the audiologist, setting it's activity to idle and disconnecting it from the patient
+
+                                    'Timing the last task by setting it's duration
+                                    If Patient.Personnel.GetCurrentTask.HasDurationValue = False Then
+                                        Patient.Personnel.GetCurrentTask.Duration = CurrentTime - Patient.Personnel.GetCurrentTask.StartTime
+                                    End If
+
+                                    'Adding the new task (idle) to the audiologist's task list
+                                    Patient.Personnel.TaskList.Add(New PersonnelTask With {.TaskType = PersonnelTask.PersonnelTaskTypes.Tillgänglig, .StartTime = CurrentTime})
+
+                                    'Releasing the audiologist from the patient
+                                    Patient.Personnel = Nothing
+
+                                End If
                             End If
-
-
                         Else
 
-                            'The patient needs manual PTA. Placing it in the queue for manual PTA
-                            Dim AvailabilityCheckResult = AvailablePlaceRequest(GamSpaceTypes.Kö_MHM)
-                            If AvailabilityCheckResult IsNot Nothing Then
+                            'The patient is only allowed to press help once, then it will be a need manual PTA patient
+                            Patient.IsHelpPresser = False
+                            Patient.NeedManualPTA = True
 
-                                'The patient need to do manual audiometry, putting the patient in the queue
-                                Patient.ActivityList.Add(New PatientActivity With {.ActivityType = PatientActivity.PatientActivityTypes.Kö_MHM, .StartTime = CurrentTime})
-                                MyAudiologyReception.MovePersonToSpace(Patient, AvailabilityCheckResult)
-
-                                'Releasing the audiologist, setting it's activity to idle and disconnecting it from the patient
-
-                                'Timing the last task by setting it's duration
-                                If Patient.Personnel.GetCurrentTask.HasDurationValue = False Then
-                                    Patient.Personnel.GetCurrentTask.Duration = CurrentTime - Patient.Personnel.GetCurrentTask.StartTime
-                                End If
-
-                                Patient.Personnel.TaskList.Add(New PersonnelTask With {.TaskType = PersonnelTask.PersonnelTaskTypes.Tillgänglig, .StartTime = CurrentTime})
-                                Patient.Personnel = Nothing
-
-                            End If
-
-                        End If
-
-
-                    Case PatientActivity.PatientActivityTypes.Kö_AHM_kvalitetsbedömning
-
-                        'The patient is in the Queue for UAud evaluation. Checking if UAud evaluation can be done. If not the patient will remein in the queue.
-                        Dim AvailabilityCheckResult = AvailablePlaceAndPersonnelRequest(GamSpaceTypes.Samtalsrum, PersonnelType.Audiologist)
-                        If AvailabilityCheckResult IsNot Nothing Then
-
-                            'Setting the wait activity to completed
-                            Patient.GetLastStartedActivity.SetToCompleted(CurrentTime)
-
-                            Dim Duration = RandomizePatientActivityDuration(PatientActivity.PatientActivityTypes.AHM_kvalitetsbedömning)
-
-                            'Noting this in the patient
-                            Patient.ActivityList.Add(New PatientActivity With {.ActivityType = PatientActivity.PatientActivityTypes.AHM_kvalitetsbedömning, .StartTime = CurrentTime, .Duration = Duration, .HasDurationValue = True})
-                            MyAudiologyReception.MovePersonToSpace(Patient, AvailabilityCheckResult.Item1)
-
-                            'Locking the audiologist to the patient
-                            Patient.Personnel = AvailabilityCheckResult.Item2
-
-                            'And in the audiologist
-                            Dim Personnel = AvailabilityCheckResult.Item2
-
-                            'Timing the last task by setting it's duration
-                            If Personnel.GetCurrentTask.HasDurationValue = False Then
-                                Personnel.GetCurrentTask.Duration = CurrentTime - Personnel.GetCurrentTask.StartTime
-                            End If
-
-                            Personnel.TaskList.Add(New PersonnelTask With {.TaskType = PersonnelTask.PersonnelTaskTypes.AHM_kvalitetsbedömning, .StartTime = CurrentTime, .Duration = Duration, .HasDurationValue = True})
-                            MyAudiologyReception.MovePersonToSpace(AvailabilityCheckResult.Item2, AvailabilityCheckResult.Item1)
-
-                        End If
-
-                        'If AvailabilityCheckResult is Nothing, the patient will remain in the queue
-
-                    Case PatientActivity.PatientActivityTypes.AHM_Avslut
-
-                        'The UAud results is finished being printed. The patient keeps the printed results to give to the next available audiologist  
-                        'Putting the patient in the queue for UAud evaluation
-
-                        Dim AvailabilityCheckResult = AvailablePlaceAndPersonnelRequest(GamSpaceTypes.Kö_AHM_kvalitetsbedömning, PersonnelType.Any)
-                        If AvailabilityCheckResult IsNot Nothing Then
-
-                            'UAud is finished, patient is placed in the queue for AHM quality evaluation
-                            Patient.ActivityList.Add(New PatientActivity With {.ActivityType = PatientActivity.PatientActivityTypes.Kö_AHM_kvalitetsbedömning, .StartTime = CurrentTime})
-                            MyAudiologyReception.MovePersonToSpace(Patient, AvailabilityCheckResult.Item1)
-
-                            'Releasing the personnel, setting it's activity to idle and disconnecting it from the patient
-
-                            'Timing the last task by setting it's duration
-                            If Patient.Personnel.GetCurrentTask.HasDurationValue = False Then
-                                Patient.Personnel.GetCurrentTask.Duration = CurrentTime - Patient.Personnel.GetCurrentTask.StartTime
-                            End If
-
-                            Patient.Personnel.TaskList.Add(New PersonnelTask With {.TaskType = PersonnelTask.PersonnelTaskTypes.Tillgänglig, .StartTime = CurrentTime})
-                            Patient.Personnel = Nothing
-
-                        End If
-
-
-                    Case PatientActivity.PatientActivityTypes.AHM
-
-                        'UAud is completed,
-                        'Checking the availabilty of a personnel that can perform post measuement actions such as save and print results. Meanwhile, the patient remains in the UAud measurement space.
-
-                        Dim AvailabilityCheckResult = AvailablePersonnelRequest(PersonnelType.Any)
-                        If AvailabilityCheckResult IsNot Nothing Then
-
-                            'UAud is finished, performing post measurment administrative tasks
-                            Dim Personnel = AvailabilityCheckResult
-                            Dim Duration = RandomizePersonnelTaskDuration(PersonnelTask.PersonnelTaskTypes.AHM_Avslut)
-
-                            'Moving the personnel to the patient space. (In reality the personnel also have to go to the printer and back to give the results to the patient.)
-                            Dim CurrentPatientLocation As GamSpace = Patient.Parent
-                            If CurrentPatientLocation IsNot Nothing Then
-                                MyAudiologyReception.MovePersonToSpace(AvailabilityCheckResult, CurrentPatientLocation)
-                            Else
-                                Throw New Exception("The patient is not is a space. This should not happen.")
-                            End If
-
-                            'Timing the last task by setting it's duration
-                            If Personnel.GetCurrentTask.HasDurationValue = False Then
-                                Personnel.GetCurrentTask.Duration = CurrentTime - Personnel.GetCurrentTask.StartTime
-                            End If
-
-                            Personnel.TaskList.Add(New PersonnelTask With {.TaskType = PersonnelTask.PersonnelTaskTypes.AHM_Avslut, .StartTime = CurrentTime, .Duration = Duration, .HasDurationValue = True})
-
-                            'Locking the personnel to the patient
-                            Patient.Personnel = Personnel
-
-                            'UAud is finished, patient gets the task to wait for AHM_Avslut, staying in the same space
-                            Patient.ActivityList.Add(New PatientActivity With {.ActivityType = PatientActivity.PatientActivityTypes.AHM_Avslut, .StartTime = CurrentTime, .Duration = Duration, .HasDurationValue = True})
-
-                        End If
-
-                    Case PatientActivity.PatientActivityTypes.Kö_AHM
-
-                        'Checking if UAud can be started
-
-                        Dim AvailabilityCheckResult = AvailablePlaceAndPersonnelRequest(GamSpaceTypes.AHM, PersonnelType.Any)
-                        If AvailabilityCheckResult IsNot Nothing Then
-
-                            'Setting the wait activity to completed
-                            Patient.GetLastStartedActivity.SetToCompleted(CurrentTime)
-
+                            'Patient remains in the same UAud space and restarts UAud directly
                             Dim UAudDuration = RandomizePatientActivityDuration(PatientActivity.PatientActivityTypes.AHM)
 
-                            'Noting this is the patient
+                            'Adding the new activity (UAud) in the patient
                             Patient.ActivityList.Add(New PatientActivity With {.ActivityType = PatientActivity.PatientActivityTypes.AHM, .StartTime = CurrentTime, .Duration = UAudDuration, .HasDurationValue = True})
-                            MyAudiologyReception.MovePersonToSpace(Patient, AvailabilityCheckResult.Item1)
 
-                            'And in the audiologist
+                            'Patient remains in the same space and need not be moved
+                            'MyAudiologyReception.MovePersonToSpace(Patient, AvailabilityCheckResult.Item1)
+
+                            'Randomizes a duration to restart the patient with UAud (the same as for AHM_Start) (TODO: this could be optimized in future versions but is hardly necessary now)
                             Dim UAudStartHelpDuration = RandomizePersonnelTaskDuration(PersonnelTask.PersonnelTaskTypes.AHM_Start)
-                            Dim Personnel = AvailabilityCheckResult.Item2
+
+                            'Referencing the audiologist
+                            Dim Personnel = Patient.Personnel
 
                             'Timing the last task by setting it's duration
                             If Personnel.GetCurrentTask.HasDurationValue = False Then
                                 Personnel.GetCurrentTask.Duration = CurrentTime - Personnel.GetCurrentTask.StartTime
                             End If
 
+
                             Personnel.TaskList.Add(New PersonnelTask With {.TaskType = PersonnelTask.PersonnelTaskTypes.AHM_Start, .StartTime = CurrentTime, .Duration = UAudStartHelpDuration, .HasDurationValue = True})
-                            MyAudiologyReception.MovePersonToSpace(AvailabilityCheckResult.Item2, AvailabilityCheckResult.Item1)
+                            'MyAudiologyReception.MovePersonToSpace(AvailabilityCheckResult.Item2, AvailabilityCheckResult.Item1) ' Audiologist is already in the UAud space
 
-                        End If
 
-                        'If AvailabilityCheckResult is Nothing, the patient will remain in the queue
-
-                    Case PatientActivity.PatientActivityTypes.Intervju
-
-                        'Patient interview is finished, placing the patient in queue for UAud
-
-                        Dim AvailabilityCheckResult = AvailablePlaceRequest(GamSpaceTypes.Kö_AHM)
-                        If AvailabilityCheckResult IsNot Nothing Then
-
-                            Patient.ActivityList.Add(New PatientActivity With {.ActivityType = PatientActivity.PatientActivityTypes.Kö_AHM, .StartTime = CurrentTime})
-                            MyAudiologyReception.MovePersonToSpace(Patient, AvailabilityCheckResult)
-
-                            'Releasing the personnel, setting it's activity to idle and disconnecting it from the patient
+                            'Releasing the audiologist, setting it's activity to idle and disconnecting it from the patient
 
                             'Timing the last task by setting it's duration
                             If Patient.Personnel.GetCurrentTask.HasDurationValue = False Then
                                 Patient.Personnel.GetCurrentTask.Duration = CurrentTime - Patient.Personnel.GetCurrentTask.StartTime
                             End If
 
+                            'Adding the new task (idle) to the audiologist's task list
                             Patient.Personnel.TaskList.Add(New PersonnelTask With {.TaskType = PersonnelTask.PersonnelTaskTypes.Tillgänglig, .StartTime = CurrentTime})
+
+                            'Releasing the audiologist from the patient
                             Patient.Personnel = Nothing
 
                         End If
+
+
+
+                    ''This step has been fully automatized in 26A, and in no longer needed
+                    'Case PatientActivity.PatientActivityTypes.AHM_Avslut
+
+                    '    'The UAud results is finished being printed. The patient keeps the printed results to give to the next available audiologist  
+                    '    'Putting the patient in the queue for UAud evaluation
+
+                    '    Dim AvailabilityCheckResult = AvailablePlaceAndPersonnelRequest(GamSpaceTypes.Kö_AHM_kvalitetsbedömning, PersonnelType.Any)
+                    '    If AvailabilityCheckResult IsNot Nothing Then
+
+                    '        'UAud is finished, patient is placed in the queue for AHM quality evaluation
+                    '        Patient.ActivityList.Add(New PatientActivity With {.ActivityType = PatientActivity.PatientActivityTypes.Kö_AHM_kvalitetsbedömning, .StartTime = CurrentTime})
+                    '        MyAudiologyReception.MovePersonToSpace(Patient, AvailabilityCheckResult.Item1)
+
+                    '        'Releasing the personnel, setting it's activity to idle and disconnecting it from the patient
+
+                    '        'Timing the last task by setting it's duration
+                    '        If Patient.Personnel.GetCurrentTask.HasDurationValue = False Then
+                    '            Patient.Personnel.GetCurrentTask.Duration = CurrentTime - Patient.Personnel.GetCurrentTask.StartTime
+                    '        End If
+
+                    '        Patient.Personnel.TaskList.Add(New PersonnelTask With {.TaskType = PersonnelTask.PersonnelTaskTypes.Tillgänglig, .StartTime = CurrentTime})
+                    '        Patient.Personnel = Nothing
+
+                    '    End If
+
+
+#Region "Interview block" ' A block means that the patient and personnel are locked to each other throughout coupled activities
 
 
                     Case PatientActivity.PatientActivityTypes.Väntar
@@ -860,17 +989,19 @@ Public Class Modeller26A
                             Patient.GetLastStartedActivity.SetToCompleted(CurrentTime)
 
                             'Starting patient interview
-
+                            'Randomizing a duration for the patient interview
                             Dim Duration = RandomizePatientActivityDuration(PatientActivity.PatientActivityTypes.Intervju)
 
-                            'Noting this in the patient
+                            'Adding the new activity (interview) in the patient
                             Patient.ActivityList.Add(New PatientActivity With {.ActivityType = PatientActivity.PatientActivityTypes.Intervju, .StartTime = CurrentTime, .Duration = Duration, .HasDurationValue = True})
+
+                            'Moving the patient to the interview room
                             MyAudiologyReception.MovePersonToSpace(Patient, AvailabilityCheckResult.Item1)
 
                             'Locking the audiologist to the patient
                             Patient.Personnel = AvailabilityCheckResult.Item2
 
-                            'And in the personnel
+                            'Getting a reference to the personell
                             Dim Personnel = AvailabilityCheckResult.Item2
 
                             'Timing the last task by setting it's duration
@@ -878,7 +1009,10 @@ Public Class Modeller26A
                                 Personnel.GetCurrentTask.Duration = CurrentTime - Personnel.GetCurrentTask.StartTime
                             End If
 
+                            'Adding the new task (patient interview) to the audiologist's task list
                             Personnel.TaskList.Add(New PersonnelTask With {.TaskType = PersonnelTask.PersonnelTaskTypes.Intervju, .StartTime = CurrentTime, .Duration = Duration, .HasDurationValue = True})
+
+                            'Moving the personell to the interview room
                             MyAudiologyReception.MovePersonToSpace(Personnel, AvailabilityCheckResult.Item1)
 
                         End If
@@ -886,10 +1020,38 @@ Public Class Modeller26A
                         'If AvailabilityCheckResult is Nothing, the patient will remain in the queue
 
 
+                    Case PatientActivity.PatientActivityTypes.Intervju
+
+                        'Patient interview is finished, placing the patient in queue for UAud
+
+                        Dim AvailabilityCheckResult = AvailablePlaceRequest(GamSpaceTypes.Kö_AHM)
+                        If AvailabilityCheckResult IsNot Nothing Then
+
+                            'Adding the new activity (queuing for UAud) in the patient
+                            Patient.ActivityList.Add(New PatientActivity With {.ActivityType = PatientActivity.PatientActivityTypes.Kö_AHM, .StartTime = CurrentTime})
+
+                            'Moving the person to the waitroom for UAud
+                            MyAudiologyReception.MovePersonToSpace(Patient, AvailabilityCheckResult)
+
+                            'Releasing the personnel, setting it's activity to idle and disconnecting it from the patient
+
+                            'Timing the last task by setting it's duration
+                            If Patient.Personnel.GetCurrentTask.HasDurationValue = False Then
+                                Patient.Personnel.GetCurrentTask.Duration = CurrentTime - Patient.Personnel.GetCurrentTask.StartTime
+                            End If
+
+                            'Adding the new task (idle) to the audiologist's task list
+                            Patient.Personnel.TaskList.Add(New PersonnelTask With {.TaskType = PersonnelTask.PersonnelTaskTypes.Tillgänglig, .StartTime = CurrentTime})
+
+                            'Releasing the audiologist from the patient
+                            Patient.Personnel = Nothing
+
+                        End If
+
+#End Region
+
                 End Select
-
             End If
-
         Next
 
         '5. Checking if cleaning needs to be done

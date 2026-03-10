@@ -235,6 +235,13 @@ Public Class ModelSettings
     Public Property ManualPtaProportion As Double = 0.2
 
     ''' <summary>
+    ''' The proportion of patients that need to take manual PTA after UAud
+    ''' </summary>
+    ''' <returns></returns>
+    <PropertyDescription("The proportion of patients that presses help during an active UAud test and thereby aborts the test so it has to be restarted")>
+    Public Property HelpPresserProportion As Double = 0.1
+
+    ''' <summary>
     ''' The average time (in minutes) for manual PTA
     ''' </summary>
     ''' <returns></returns>

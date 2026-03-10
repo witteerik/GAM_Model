@@ -54,6 +54,11 @@ Public Class Patient
     ''' </summary>
     Public NeedManualPTA As Boolean = False
 
+    ''' <summary>
+    ''' Stores the value whether the patient presses help during UAud test, whereby the UAud test needs to be restarted.
+    ''' </summary>
+    Public IsHelpPresser As Boolean = False
+
     Public Sub Me_Invalidated() Handles Me.Invalidated
 
         If LatestActivityFinished = True Then

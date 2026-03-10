@@ -154,7 +154,7 @@ Partial Class GAM_0_4_AudF
         GamSpace19.BackColor = Color.Silver
         GamSpace19.HighestNumberOfPersons = 0
         GamSpace19.IsClosed = False
-        GamSpace19.Location = New Point(584, 816)
+        GamSpace19.Location = New Point(587, 816)
         GamSpace19.Name = "GamSpace19"
         GamSpace19.NeedsCleaning = False
         GamSpace19.Size = New Size(693, 177)

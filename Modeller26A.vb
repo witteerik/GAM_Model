@@ -4,7 +4,7 @@ Imports System.Runtime
 Imports System.Windows.Forms.VisualStyles.VisualStyleElement
 Imports System.Xml.Serialization
 
-Public Class Modeller
+Public Class Modeller26A
 
     Public MyAudiologyReceptionForm As IAudiologyReceptionForm
     Public MyAudiologyReception As AudiologyReception
@@ -25,7 +25,7 @@ Public Class Modeller
 
     Public CurrentModelSettings As ModelSettings = Nothing
 
-    Private Sub Modeller_Load(sender As Object, e As EventArgs) Handles MyBase.Load
+    Private Sub Modeller26A_Load(sender As Object, e As EventArgs) Handles MyBase.Load
 
         StartModelling_Button.Enabled = False
         StopSimulationButton.Enabled = False
@@ -762,7 +762,7 @@ Public Class Modeller
                     Case PatientActivity.PatientActivityTypes.AHM
 
                         'UAud is completed,
-                        'Checking the availabilty of a personnel that can perform post measuement actions such as save and print results. Meanwhile, the patient remains in the UAud measurment space.
+                        'Checking the availabilty of a personnel that can perform post measuement actions such as save and print results. Meanwhile, the patient remains in the UAud measurement space.
 
                         Dim AvailabilityCheckResult = AvailablePersonnelRequest(PersonnelType.Any)
                         If AvailabilityCheckResult IsNot Nothing Then

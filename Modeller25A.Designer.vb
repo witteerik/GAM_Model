@@ -1,5 +1,5 @@
 ﻿<Global.Microsoft.VisualBasic.CompilerServices.DesignerGenerated()> _
-Partial Class Modeller
+Partial Class Modeller25A
     Inherits System.Windows.Forms.Form
 
     'Form overrides dispose to clean up the component list.
@@ -236,14 +236,14 @@ Partial Class Modeller
         ShowReceptionFormButton.Text = "Show audiology reception"
         ShowReceptionFormButton.UseVisualStyleBackColor = True
         ' 
-        ' Modeller
+        ' Modeller25A
         ' 
         AutoScaleDimensions = New SizeF(7F, 15F)
         AutoScaleMode = AutoScaleMode.Font
         ClientSize = New Size(1194, 787)
         Controls.Add(SplitContainer2)
-        Name = "Modeller"
-        Text = "Modeller"
+        Name = "Modeller25A"
+        Text = "Modeller 25A"
         CType(DataGridView1, ComponentModel.ISupportInitialize).EndInit()
         SplitContainer1.Panel1.ResumeLayout(False)
         SplitContainer1.Panel2.ResumeLayout(False)

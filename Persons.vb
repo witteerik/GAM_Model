@@ -41,6 +41,7 @@ Public Class Patient
         Set(value As List(Of PatientActivity))
             _ActivityList = value
             Me.Invalidate()
+            If Me.Parent IsNot Nothing Then Parent.Invalidate()
         End Set
     End Property
 
@@ -64,14 +65,17 @@ Public Class Patient
         If LatestActivityFinished = True Then
             Me.BackColor = Color.Red
         Else
-            Me.BackColor = Color.LightPink
+            Me.BackColor = Color.LightGreen
         End If
+
+        If Me.Parent IsNot Nothing Then Parent.Invalidate()
 
     End Sub
 
     Public Function GetLastStartedActivity() As PatientActivity
 
         Me.Invalidate()
+        If Me.Parent IsNot Nothing Then Parent.Invalidate()
 
         If _ActivityList.Any Then
             Return _ActivityList.Last
@@ -169,12 +173,14 @@ Public MustInherit Class Personnel
         Set(value As List(Of PersonnelTask))
             _TaskList = value
             Me.Invalidate()
+            If Me.Parent IsNot Nothing Then Parent.Invalidate()
         End Set
     End Property
 
     Public Function GetCurrentTask() As PersonnelTask
 
         Me.Invalidate()
+        If Me.Parent IsNot Nothing Then Parent.Invalidate()
 
         If _TaskList.Any Then
             Return _TaskList.Last
@@ -220,9 +226,9 @@ Public Class Audiologist
 
         If _TaskList.Any Then
             If _TaskList.Last.TaskType = PersonnelTask.PersonnelTaskTypes.Tillgänglig Then
-                Me.BackColor = Color.Lime
+                Me.BackColor = Color.LightSkyBlue
             Else
-                Me.BackColor = Color.LightGreen
+                Me.BackColor = Color.LightBlue
             End If
         End If
 

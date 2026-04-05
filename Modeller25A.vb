@@ -990,7 +990,7 @@ Public Class Modeller25A
 
         'Looking in all places/rooms of the specified type
         For Each Room In MyAudiologyReception.GetGamSpaces(RequestedPlaceType)
-            If Room.IsAvaliable = True Then
+            If Room.IsAvailable = True Then
 
                 Select Case RequestedPersonnelType
 
@@ -1050,7 +1050,7 @@ Public Class Modeller25A
 
         'Looking in all places/rooms of the specified type
         For Each Room In MyAudiologyReception.GetGamSpaces(RequestedPlaceType)
-            If Room.IsAvaliable = True Then
+            If Room.IsAvailable = True Then
                 Return Room
             End If
         Next

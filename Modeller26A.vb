@@ -25,6 +25,8 @@ Public Class Modeller26A
 
     Public CurrentModelSettings As ModelSettings = Nothing
 
+    Private UseReservations As Boolean = True
+
     Private Sub Modeller26A_Load(sender As Object, e As EventArgs) Handles MyBase.Load
 
         StartModelling_Button.Enabled = False
@@ -42,6 +44,9 @@ Public Class Modeller26A
 
         Dim NewGAM4 As IAudiologyReceptionForm = New GAM_0_4_AudF
         Reception_ComboBox.Items.Add(NewGAM4.ToString)
+
+        Dim NewGAM4_Tablet As IAudiologyReceptionForm = New GAM_0_4_Tablet
+        Reception_ComboBox.Items.Add(NewGAM4_Tablet.ToString)
 
         'These should be selected and loaded from file
         CurrentModelSettings = New ModelSettings
@@ -140,6 +145,7 @@ Public Class Modeller26A
         Dim NewGAM2 As IAudiologyReceptionForm = New GAM_0_2
         Dim NewGAM3 As IAudiologyReceptionForm = New GAM_0_3
         Dim NewGAM4 As IAudiologyReceptionForm = New GAM_0_4_AudF
+        Dim NewGAM4_Tablet As IAudiologyReceptionForm = New GAM_0_4_Tablet
 
         If Reception_ComboBox.SelectedItem = NewGAM1.ToString Then
             MyAudiologyReceptionForm = NewGAM1
@@ -149,6 +155,8 @@ Public Class Modeller26A
             MyAudiologyReceptionForm = NewGAM3
         ElseIf Reception_ComboBox.SelectedItem = NewGAM4.ToString Then
             MyAudiologyReceptionForm = NewGAM4
+        ElseIf Reception_ComboBox.SelectedItem = NewGAM4_Tablet.ToString Then
+            MyAudiologyReceptionForm = NewGAM4_Tablet
         Else
             Throw New Exception("This is a bug! The selected audiology reception cannot be found")
         End If
@@ -526,9 +534,12 @@ Public Class Modeller26A
             PatientPrioritizationList.AddRange(PatientList.Value)
         Next
 
-
         'Going through each patient, in the prioritized order
         For Each Patient In PatientPrioritizationList
+
+            'Updating reservations
+            MyAudiologyReception.UpdateReservations()
+
             If Patient.LatestActivityFinished = True Then
 
                 Dim LatestActivity = Patient.GetLastStartedActivity
@@ -538,8 +549,6 @@ Public Class Modeller26A
                     Case PatientActivity.PatientActivityTypes.Kö_AHM
 
                         'Checking if UAud can be started. 
-                        'This is the highest priority task, it was moved to first position in Modeller 26A (it was previously further down in the list but still had the highest priority in GAM pilots VT25)
-
                         Dim AvailabilityCheckResult = AvailablePlaceAndPersonnelRequest(GamSpaceTypes.AHM, PersonnelType.Any)
                         If AvailabilityCheckResult IsNot Nothing Then
 
@@ -744,7 +753,6 @@ Public Class Modeller26A
                         'UAud is completed, putting the patient in the queue for UAud quality evaluation
                         'Adding the new activity (queuing for UAud quality assessment) in the patient
                         Patient.ActivityList.Add(New PatientActivity With {.ActivityType = PatientActivity.PatientActivityTypes.Kö_AHM_kvalitetsbedömning, .StartTime = CurrentTime})
-
 
                         'Nothing of the below is longer needed:
                         ''Checking the availabilty of a personnel that can perform post measuement actions such as save and print results. Meanwhile, the patient remains in the UAud measurement space.
@@ -982,7 +990,18 @@ Public Class Modeller26A
 
                         'Checking if the patient can be taken into interview
 
-                        Dim AvailabilityCheckResult = AvailablePlaceAndPersonnelRequest(GamSpaceTypes.Samtalsrum, PersonnelType.Any)
+                        'We check first if we have unreserved AHM rooms that can be used
+                        Dim AvailabilityCheckResult As Tuple(Of GamSpace, Personnel) = Nothing
+
+                        If UseReservations = True Then
+                            AvailabilityCheckResult = AvailablePlaceAndPersonnelRequest(GamSpaceTypes.AHM, PersonnelType.Any, True)
+                        End If
+
+                        'If not, we check if we have a Samtalsrum that can be used
+                        If AvailabilityCheckResult Is Nothing Then
+                            AvailabilityCheckResult = AvailablePlaceAndPersonnelRequest(GamSpaceTypes.Samtalsrum, PersonnelType.Any)
+                        End If
+
                         If AvailabilityCheckResult IsNot Nothing Then
 
                             'Setting the wait activity to completed
@@ -998,7 +1017,7 @@ Public Class Modeller26A
                             'Moving the patient to the interview room
                             MyAudiologyReception.MovePersonToSpace(Patient, AvailabilityCheckResult.Item1)
 
-                            'Locking the audiologist to the patient
+                            'Locking the personnel to the patient
                             Patient.Personnel = AvailabilityCheckResult.Item2
 
                             'Getting a reference to the personell
@@ -1024,27 +1043,80 @@ Public Class Modeller26A
 
                         'Patient interview is finished, placing the patient in queue for UAud
 
-                        Dim AvailabilityCheckResult = AvailablePlaceRequest(GamSpaceTypes.Kö_AHM)
-                        If AvailabilityCheckResult IsNot Nothing Then
+                        'Checking if the patient is already in a AHM room, if so we can start AHM immediately
+                        Dim StartedAhmImmediately As Boolean = False
+                        If Patient.Parent IsNot Nothing Then
+                            Dim ParentRooom = TryCast(Patient.Parent, GamSpace)
+                            If ParentRooom IsNot Nothing Then
+                                If ParentRooom.SpaceType = GamSpaceTypes.AHM Then
 
-                            'Adding the new activity (queuing for UAud) in the patient
-                            Patient.ActivityList.Add(New PatientActivity With {.ActivityType = PatientActivity.PatientActivityTypes.Kö_AHM, .StartTime = CurrentTime})
+                                    'We can start AHM immediately
+                                    StartedAhmImmediately = True
 
-                            'Moving the person to the waitroom for UAud
-                            MyAudiologyReception.MovePersonToSpace(Patient, AvailabilityCheckResult)
+                                    'We need to duplicate parts of the code to start AHM here
+                                    'Setting the wait activity to completed
+                                    Patient.GetLastStartedActivity.SetToCompleted(CurrentTime)
 
-                            'Releasing the personnel, setting it's activity to idle and disconnecting it from the patient
+                                    'Randomizing a planned test time
+                                    Dim UAudDuration = RandomizePatientActivityDuration(PatientActivity.PatientActivityTypes.AHM)
 
-                            'Timing the last task by setting it's duration
-                            If Patient.Personnel.GetCurrentTask.HasDurationValue = False Then
-                                Patient.Personnel.GetCurrentTask.Duration = CurrentTime - Patient.Personnel.GetCurrentTask.StartTime
+                                    'Adding the new activity (UAud) in the patient
+                                    Patient.ActivityList.Add(New PatientActivity With {.ActivityType = PatientActivity.PatientActivityTypes.AHM, .StartTime = CurrentTime, .Duration = UAudDuration, .HasDurationValue = True})
+
+                                    'We do not need to move the person, since it's already in the AHM space
+                                    'Moving the patient to the UAud space
+                                    'MyAudiologyReception.MovePersonToSpace(Patient, AvailabilityCheckResult.Item1)
+
+                                    'Randomizing a time for the personell to instruct and start off the patient with UAud
+                                    Dim UAudStartHelpDuration = RandomizePersonnelTaskDuration(PersonnelTask.PersonnelTaskTypes.AHM_Start)
+
+                                    'Getting a reference to the personell
+                                    Dim Personnel = Patient.Personnel
+
+                                    'Timing the last personell task by setting it's duration
+                                    If Personnel.GetCurrentTask.HasDurationValue = False Then
+                                        Personnel.GetCurrentTask.Duration = CurrentTime - Personnel.GetCurrentTask.StartTime
+                                    End If
+
+                                    'Adding the new task (starting the patient off with UAud) to the personell's task list
+                                    Personnel.TaskList.Add(New PersonnelTask With {.TaskType = PersonnelTask.PersonnelTaskTypes.AHM_Start, .StartTime = CurrentTime, .Duration = UAudStartHelpDuration, .HasDurationValue = True})
+
+                                    'Moving the personell to the UAud space
+                                    'We do not need to move the personnel to the AHM room, since it's also already there
+                                    'MyAudiologyReception.MovePersonToSpace(AvailabilityCheckResult.Item2, AvailabilityCheckResult.Item1)
+
+                                End If
+                            End If
+                        End If
+
+                        If StartedAhmImmediately = False Then
+
+                            'We need to place the patient in queue for AHM
+                            Dim AvailabilityCheckResult = AvailablePlaceRequest(GamSpaceTypes.Kö_AHM)
+
+                            If AvailabilityCheckResult IsNot Nothing Then
+
+                                'Adding the new activity (queuing for UAud) in the patient
+                                Patient.ActivityList.Add(New PatientActivity With {.ActivityType = PatientActivity.PatientActivityTypes.Kö_AHM, .StartTime = CurrentTime})
+
+                                'Moving the person to the waitroom for UAud
+                                MyAudiologyReception.MovePersonToSpace(Patient, AvailabilityCheckResult)
+
+                                'Releasing the personnel, setting it's activity to idle and disconnecting it from the patient
+
+                                'Timing the last task by setting it's duration
+                                If Patient.Personnel.GetCurrentTask.HasDurationValue = False Then
+                                    Patient.Personnel.GetCurrentTask.Duration = CurrentTime - Patient.Personnel.GetCurrentTask.StartTime
+                                End If
+
+                                'Adding the new task (idle) to the audiologist's task list
+                                Patient.Personnel.TaskList.Add(New PersonnelTask With {.TaskType = PersonnelTask.PersonnelTaskTypes.Tillgänglig, .StartTime = CurrentTime})
+
+                                'Releasing the audiologist from the patient
+                                Patient.Personnel = Nothing
+
                             End If
 
-                            'Adding the new task (idle) to the audiologist's task list
-                            Patient.Personnel.TaskList.Add(New PersonnelTask With {.TaskType = PersonnelTask.PersonnelTaskTypes.Tillgänglig, .StartTime = CurrentTime})
-
-                            'Releasing the audiologist from the patient
-                            Patient.Personnel = Nothing
 
                         End If
 
@@ -1086,6 +1158,13 @@ Public Class Modeller26A
 
         '7. Regestering gam space use
         MyAudiologyReception.CountGamSpaceUse()
+
+        'Calling IsAvailable only to update the GUI
+        Dim GamSpaces = MyAudiologyReception.GetAllGamSpaces()
+        For Each GamSpace In GamSpaces
+            GamSpace.IsAvailable()
+        Next
+
 
     End Sub
 
@@ -1142,17 +1221,25 @@ Public Class Modeller26A
     End Function
 
 
-
-
     ''' <summary>
     ''' Returns the place and personnel if available, or Nothing if no place or personnel is available.
     ''' </summary>
     ''' <returns></returns>
-    Public Function AvailablePlaceAndPersonnelRequest(ByVal RequestedPlaceType As GamSpaceTypes, ByVal RequestedPersonnelType As PersonnelType) As Tuple(Of GamSpace, Personnel)
+    Public Function AvailablePlaceAndPersonnelRequest(ByVal RequestedPlaceType As GamSpaceTypes, ByVal RequestedPersonnelType As PersonnelType, Optional ByVal ExcludeReservedRooms As Boolean = False) As Tuple(Of GamSpace, Personnel)
 
         'Looking in all places/rooms of the specified type
         For Each Room In MyAudiologyReception.GetGamSpaces(RequestedPlaceType)
-            If Room.IsAvaliable = True Then
+
+            Dim BlockReservedRoom As Boolean = False
+            If UseReservations = True Then
+                If ExcludeReservedRooms = True Then
+                    If Room.IsReserved = True Then
+                        BlockReservedRoom = True
+                    End If
+                End If
+            End If
+
+            If Room.IsAvailable = True And BlockReservedRoom = False Then
 
                 Select Case RequestedPersonnelType
 
@@ -1212,7 +1299,7 @@ Public Class Modeller26A
 
         'Looking in all places/rooms of the specified type
         For Each Room In MyAudiologyReception.GetGamSpaces(RequestedPlaceType)
-            If Room.IsAvaliable = True Then
+            If Room.IsAvailable = True Then
                 Return Room
             End If
         Next
@@ -1542,6 +1629,19 @@ Public Class Modeller26A
             Next
         Next
 
+        ' Reporting detailed patient activities
+        Dim PatientFullActivityList As New List(Of String)
+        PatientFullActivityList.Add("PATIENT ACTIVITY TIMES")
+        PatientFullActivityList.Add("Patient" & vbTab & "Start" & vbTab & "Duration" & vbTab & "Activity")
+
+        For Each Patient In AllPatientList
+            For Each Activity In Patient.ActivityList
+                Dim StartTimePrefix As String = ""
+                If Activity.StartTime < TimeSpan.Zero Then StartTimePrefix = "-"
+                PatientFullActivityList.Add("Patient " & Patient.ID & vbTab & StartTimePrefix & Activity.StartTime.ToString("hh\:mm\:ss") & vbTab & Activity.Duration.ToString("hh\:mm\:ss") & vbTab & Activity.ActivityType.ToString)
+            Next
+            PatientFullActivityList.Add("")
+        Next
 
         StatisticsTextBox.Text = String.Join(vbCrLf, PatientActivityDurationStringList) &
             vbCrLf & vbCrLf &
@@ -1559,7 +1659,9 @@ Public Class Modeller26A
              vbCrLf & vbCrLf &
             String.Join(vbCrLf, TaskCountList) &
              vbCrLf & vbCrLf &
-            String.Join(vbCrLf, TaskTimes)
+            String.Join(vbCrLf, TaskTimes) &
+            vbCrLf & vbCrLf &
+            String.Join(vbCrLf, PatientFullActivityList)
 
     End Sub
 

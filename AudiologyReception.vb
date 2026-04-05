@@ -6,7 +6,7 @@
 
     Public Sub New()
 
-        CurrentTimeTitle_Label.Text = "Tid in i simuleringen:"
+        CurrentTimeTitle_Label.Text = "Time into simulation:"
         CurrentTimeTitle_Label.Location = New Point(10, 10)
         CurrentTimeTitle_Label.AutoSize = True
         CurrentTime_Label.Text = 0
@@ -39,6 +39,9 @@
         'Moving the patient to the new place
         Place.Controls.Add(Person)
 
+        'Updateing reservations
+        UpdateReservations()
+
     End Sub
 
 
@@ -57,6 +60,45 @@
 
         Return Output
     End Function
+
+    Public Sub UpdateReservations()
+
+        'Get number of patients waiting in Kö_AHM
+        Dim PatientsInWaitroomAHM As Integer = 0
+        Dim AHM_WaitRooms = GetGamSpaces(GamSpaceTypes.Kö_AHM)
+        For Each GamSpace In AHM_WaitRooms
+            For Each c As Control In GamSpace.Controls
+                Dim CastPatient = TryCast(c, Patient)
+                If CastPatient IsNot Nothing Then
+                    PatientsInWaitroomAHM += 1
+                End If
+            Next
+        Next
+
+        'Get number of available AHM rooms
+        Dim NumberOfAvailableAhmRooms As Integer = 0
+        Dim AHM_Rooms = GetGamSpaces(GamSpaceTypes.AHM)
+        For Each GamSpace In AHM_Rooms
+            If GamSpace.IsAvailable = True Then
+                NumberOfAvailableAhmRooms += 1
+            End If
+        Next
+
+        Dim NumberOfReservedRooms As Integer = 0
+        For Each GamSpace In AHM_Rooms
+            If GamSpace.IsAvailable = True Then
+                If NumberOfReservedRooms < PatientsInWaitroomAHM Then
+                    GamSpace.IsReserved = True
+                    NumberOfReservedRooms += 1
+                Else
+                    GamSpace.IsReserved = False
+                End If
+            Else
+                GamSpace.IsReserved = False
+            End If
+        Next
+
+    End Sub
 
     Public Function GetAllGamSpaces() As List(Of GamSpace)
 

@@ -23,6 +23,11 @@ Partial Class GAM_0_4_Tablet
     <System.Diagnostics.DebuggerStepThrough()> _
     Private Sub InitializeComponent()
         MyAudiologyReception = New AudiologyReception()
+        GamSpace23 = New GamSpace()
+        GamSpace22 = New GamSpace()
+        GamSpace21 = New GamSpace()
+        GamSpace12 = New GamSpace()
+        GamSpace2 = New GamSpace()
         VerticalWall2 = New VerticalWall()
         VerticalWall1 = New VerticalWall()
         Label11 = New Label()
@@ -54,6 +59,10 @@ Partial Class GAM_0_4_Tablet
         GamSpace5 = New GamSpace()
         GamSpace3 = New GamSpace()
         GamSpace1 = New GamSpace()
+        GamSpace24 = New GamSpace()
+        GamSpace25 = New GamSpace()
+        GamSpace26 = New GamSpace()
+        GamSpace27 = New GamSpace()
         MyAudiologyReception.SuspendLayout()
         SuspendLayout()
         ' 
@@ -62,6 +71,15 @@ Partial Class GAM_0_4_Tablet
         MyAudiologyReception.AutoScroll = True
         MyAudiologyReception.BackColor = Color.White
         MyAudiologyReception.BackgroundImageLayout = ImageLayout.Zoom
+        MyAudiologyReception.Controls.Add(GamSpace27)
+        MyAudiologyReception.Controls.Add(GamSpace26)
+        MyAudiologyReception.Controls.Add(GamSpace25)
+        MyAudiologyReception.Controls.Add(GamSpace24)
+        MyAudiologyReception.Controls.Add(GamSpace23)
+        MyAudiologyReception.Controls.Add(GamSpace22)
+        MyAudiologyReception.Controls.Add(GamSpace21)
+        MyAudiologyReception.Controls.Add(GamSpace12)
+        MyAudiologyReception.Controls.Add(GamSpace2)
         MyAudiologyReception.Controls.Add(VerticalWall2)
         MyAudiologyReception.Controls.Add(VerticalWall1)
         MyAudiologyReception.Controls.Add(Label11)
@@ -96,21 +114,106 @@ Partial Class GAM_0_4_Tablet
         MyAudiologyReception.Dock = DockStyle.Fill
         MyAudiologyReception.Location = New Point(0, 0)
         MyAudiologyReception.Name = "MyAudiologyReception"
-        MyAudiologyReception.Size = New Size(1162, 1061)
+        MyAudiologyReception.Size = New Size(1430, 905)
         MyAudiologyReception.TabIndex = 1
+        ' 
+        ' GamSpace23
+        ' 
+        GamSpace23.BackColor = Color.Tan
+        GamSpace23.BorderStyle = BorderStyle.FixedSingle
+        GamSpace23.HighestNumberOfPersons = 0
+        GamSpace23.IsClosed = True
+        GamSpace23.IsReserved = False
+        GamSpace23.Location = New Point(468, 689)
+        GamSpace23.Name = "GamSpace23"
+        GamSpace23.NeedsCleaning = False
+        GamSpace23.Size = New Size(146, 78)
+        GamSpace23.SpaceName = ""
+        GamSpace23.SpaceType = GamSpaceTypes.MHM
+        GamSpace23.TabIndex = 12
+        GamSpace23.UseTicks = 0L
+        GamSpace23.VoidTicks = 0L
+        ' 
+        ' GamSpace22
+        ' 
+        GamSpace22.BackColor = Color.LightCoral
+        GamSpace22.BorderStyle = BorderStyle.FixedSingle
+        GamSpace22.HighestNumberOfPersons = 0
+        GamSpace22.IsClosed = True
+        GamSpace22.IsReserved = False
+        GamSpace22.Location = New Point(612, 427)
+        GamSpace22.Name = "GamSpace22"
+        GamSpace22.NeedsCleaning = False
+        GamSpace22.Size = New Size(58, 113)
+        GamSpace22.SpaceName = ""
+        GamSpace22.SpaceType = GamSpaceTypes.AHM
+        GamSpace22.TabIndex = 16
+        GamSpace22.UseTicks = 0L
+        GamSpace22.VoidTicks = 0L
+        ' 
+        ' GamSpace21
+        ' 
+        GamSpace21.BackColor = Color.LightCoral
+        GamSpace21.BorderStyle = BorderStyle.FixedSingle
+        GamSpace21.HighestNumberOfPersons = 0
+        GamSpace21.IsClosed = True
+        GamSpace21.IsReserved = False
+        GamSpace21.Location = New Point(548, 427)
+        GamSpace21.Name = "GamSpace21"
+        GamSpace21.NeedsCleaning = False
+        GamSpace21.Size = New Size(58, 113)
+        GamSpace21.SpaceName = ""
+        GamSpace21.SpaceType = GamSpaceTypes.AHM
+        GamSpace21.TabIndex = 37
+        GamSpace21.UseTicks = 0L
+        GamSpace21.VoidTicks = 0L
+        ' 
+        ' GamSpace12
+        ' 
+        GamSpace12.BackColor = Color.LightSkyBlue
+        GamSpace12.BorderStyle = BorderStyle.FixedSingle
+        GamSpace12.HighestNumberOfPersons = 0
+        GamSpace12.IsClosed = True
+        GamSpace12.IsReserved = False
+        GamSpace12.Location = New Point(554, 188)
+        GamSpace12.Name = "GamSpace12"
+        GamSpace12.NeedsCleaning = False
+        GamSpace12.Size = New Size(126, 96)
+        GamSpace12.SpaceName = ""
+        GamSpace12.SpaceType = GamSpaceTypes.Samtalsrum
+        GamSpace12.TabIndex = 9
+        GamSpace12.UseTicks = 0L
+        GamSpace12.VoidTicks = 0L
+        ' 
+        ' GamSpace2
+        ' 
+        GamSpace2.BackColor = Color.LightCoral
+        GamSpace2.BorderStyle = BorderStyle.FixedSingle
+        GamSpace2.HighestNumberOfPersons = 0
+        GamSpace2.IsClosed = True
+        GamSpace2.IsReserved = False
+        GamSpace2.Location = New Point(484, 427)
+        GamSpace2.Name = "GamSpace2"
+        GamSpace2.NeedsCleaning = False
+        GamSpace2.Size = New Size(58, 113)
+        GamSpace2.SpaceName = ""
+        GamSpace2.SpaceType = GamSpaceTypes.AHM
+        GamSpace2.TabIndex = 15
+        GamSpace2.UseTicks = 0L
+        GamSpace2.VoidTicks = 0L
         ' 
         ' VerticalWall2
         ' 
         VerticalWall2.BackColor = Color.DarkSlateGray
         VerticalWall2.Location = New Point(144, 1)
         VerticalWall2.Name = "VerticalWall2"
-        VerticalWall2.Size = New Size(5, 1200)
+        VerticalWall2.Size = New Size(5, 900)
         VerticalWall2.TabIndex = 36
         ' 
         ' VerticalWall1
         ' 
         VerticalWall1.BackColor = Color.DarkSlateGray
-        VerticalWall1.Location = New Point(757, 1)
+        VerticalWall1.Location = New Point(829, 1)
         VerticalWall1.Name = "VerticalWall1"
         VerticalWall1.Size = New Size(5, 900)
         VerticalWall1.TabIndex = 35
@@ -119,7 +222,7 @@ Partial Class GAM_0_4_Tablet
         ' 
         Label11.AutoSize = True
         Label11.Font = New Font("Segoe UI", 9F, FontStyle.Bold)
-        Label11.Location = New Point(777, 320)
+        Label11.Location = New Point(849, 249)
         Label11.Name = "Label11"
         Label11.Size = New Size(151, 15)
         Label11.TabIndex = 34
@@ -129,7 +232,7 @@ Partial Class GAM_0_4_Tablet
         ' 
         Label10.AutoSize = True
         Label10.Font = New Font("Segoe UI", 9F, FontStyle.Bold)
-        Label10.Location = New Point(777, 144)
+        Label10.Location = New Point(849, 125)
         Label10.Name = "Label10"
         Label10.Size = New Size(177, 15)
         Label10.TabIndex = 33
@@ -139,7 +242,7 @@ Partial Class GAM_0_4_Tablet
         ' 
         Label9.AutoSize = True
         Label9.Font = New Font("Segoe UI", 9F, FontStyle.Bold)
-        Label9.Location = New Point(777, 10)
+        Label9.Location = New Point(849, 10)
         Label9.Name = "Label9"
         Label9.Size = New Size(96, 15)
         Label9.TabIndex = 32
@@ -149,11 +252,11 @@ Partial Class GAM_0_4_Tablet
         ' 
         Label8.AutoSize = True
         Label8.Font = New Font("Segoe UI", 9F, FontStyle.Bold)
-        Label8.Location = New Point(155, 894)
+        Label8.Location = New Point(849, 375)
         Label8.Name = "Label8"
-        Label8.Size = New Size(75, 15)
+        Label8.Size = New Size(118, 15)
         Label8.TabIndex = 31
-        Label8.Text = "Going home"
+        Label8.Text = "Patients gone home"
         ' 
         ' Label7
         ' 
@@ -234,7 +337,7 @@ Partial Class GAM_0_4_Tablet
         GamSpace17.Location = New Point(155, 28)
         GamSpace17.Name = "GamSpace17"
         GamSpace17.NeedsCleaning = False
-        GamSpace17.Size = New Size(596, 127)
+        GamSpace17.Size = New Size(657, 127)
         GamSpace17.SpaceName = ""
         GamSpace17.SpaceType = GamSpaceTypes.Väntrum
         GamSpace17.TabIndex = 18
@@ -250,7 +353,7 @@ Partial Class GAM_0_4_Tablet
         GamSpace11.Location = New Point(155, 575)
         GamSpace11.Name = "GamSpace11"
         GamSpace11.NeedsCleaning = False
-        GamSpace11.Size = New Size(596, 77)
+        GamSpace11.Size = New Size(657, 77)
         GamSpace11.SpaceName = ""
         GamSpace11.SpaceType = GamSpaceTypes.Kö_MHM
         GamSpace11.TabIndex = 12
@@ -266,7 +369,7 @@ Partial Class GAM_0_4_Tablet
         GamSpace8.Location = New Point(155, 803)
         GamSpace8.Name = "GamSpace8"
         GamSpace8.NeedsCleaning = False
-        GamSpace8.Size = New Size(596, 80)
+        GamSpace8.Size = New Size(657, 80)
         GamSpace8.SpaceName = ""
         GamSpace8.SpaceType = GamSpaceTypes.Kö_Rådgivning
         GamSpace8.TabIndex = 9
@@ -282,7 +385,7 @@ Partial Class GAM_0_4_Tablet
         GamSpace4.Location = New Point(155, 318)
         GamSpace4.Name = "GamSpace4"
         GamSpace4.NeedsCleaning = False
-        GamSpace4.Size = New Size(596, 72)
+        GamSpace4.Size = New Size(657, 72)
         GamSpace4.SpaceName = ""
         GamSpace4.SpaceType = GamSpaceTypes.Kö_AHM
         GamSpace4.TabIndex = 5
@@ -295,10 +398,10 @@ Partial Class GAM_0_4_Tablet
         GamSpace19.HighestNumberOfPersons = 0
         GamSpace19.IsClosed = False
         GamSpace19.IsReserved = False
-        GamSpace19.Location = New Point(155, 912)
+        GamSpace19.Location = New Point(849, 393)
         GamSpace19.Name = "GamSpace19"
         GamSpace19.NeedsCleaning = False
-        GamSpace19.Size = New Size(984, 277)
+        GamSpace19.Size = New Size(569, 490)
         GamSpace19.SpaceName = ""
         GamSpace19.SpaceType = GamSpaceTypes.Utgång
         GamSpace19.TabIndex = 4
@@ -328,10 +431,10 @@ Partial Class GAM_0_4_Tablet
         GamSpace18.HighestNumberOfPersons = 0
         GamSpace18.IsClosed = False
         GamSpace18.IsReserved = False
-        GamSpace18.Location = New Point(777, 338)
+        GamSpace18.Location = New Point(849, 267)
         GamSpace18.Name = "GamSpace18"
         GamSpace18.NeedsCleaning = False
-        GamSpace18.Size = New Size(351, 120)
+        GamSpace18.Size = New Size(569, 86)
         GamSpace18.SpaceName = ""
         GamSpace18.SpaceType = GamSpaceTypes.PersonalRum
         GamSpace18.TabIndex = 19
@@ -344,10 +447,10 @@ Partial Class GAM_0_4_Tablet
         GamSpace16.HighestNumberOfPersons = 0
         GamSpace16.IsClosed = False
         GamSpace16.IsReserved = False
-        GamSpace16.Location = New Point(777, 28)
+        GamSpace16.Location = New Point(849, 28)
         GamSpace16.Name = "GamSpace16"
         GamSpace16.NeedsCleaning = False
-        GamSpace16.Size = New Size(351, 107)
+        GamSpace16.Size = New Size(569, 76)
         GamSpace16.SpaceName = ""
         GamSpace16.SpaceType = GamSpaceTypes.Personalyta
         GamSpace16.TabIndex = 17
@@ -360,10 +463,10 @@ Partial Class GAM_0_4_Tablet
         GamSpace15.HighestNumberOfPersons = 0
         GamSpace15.IsClosed = False
         GamSpace15.IsReserved = False
-        GamSpace15.Location = New Point(777, 162)
+        GamSpace15.Location = New Point(849, 143)
         GamSpace15.Name = "GamSpace15"
         GamSpace15.NeedsCleaning = False
-        GamSpace15.Size = New Size(351, 145)
+        GamSpace15.Size = New Size(569, 83)
         GamSpace15.SpaceName = ""
         GamSpace15.SpaceType = GamSpaceTypes.Journaldatorplatser
         GamSpace15.TabIndex = 16
@@ -523,12 +626,80 @@ Partial Class GAM_0_4_Tablet
         GamSpace1.UseTicks = 0L
         GamSpace1.VoidTicks = 0L
         ' 
+        ' GamSpace24
+        ' 
+        GamSpace24.BackColor = Color.LightSkyBlue
+        GamSpace24.BorderStyle = BorderStyle.FixedSingle
+        GamSpace24.HighestNumberOfPersons = 0
+        GamSpace24.IsClosed = True
+        GamSpace24.IsReserved = False
+        GamSpace24.Location = New Point(686, 188)
+        GamSpace24.Name = "GamSpace24"
+        GamSpace24.NeedsCleaning = False
+        GamSpace24.Size = New Size(126, 96)
+        GamSpace24.SpaceName = ""
+        GamSpace24.SpaceType = GamSpaceTypes.Samtalsrum
+        GamSpace24.TabIndex = 38
+        GamSpace24.UseTicks = 0L
+        GamSpace24.VoidTicks = 0L
+        ' 
+        ' GamSpace25
+        ' 
+        GamSpace25.BackColor = Color.LightCoral
+        GamSpace25.BorderStyle = BorderStyle.FixedSingle
+        GamSpace25.HighestNumberOfPersons = 0
+        GamSpace25.IsClosed = True
+        GamSpace25.IsReserved = False
+        GamSpace25.Location = New Point(676, 427)
+        GamSpace25.Name = "GamSpace25"
+        GamSpace25.NeedsCleaning = False
+        GamSpace25.Size = New Size(58, 113)
+        GamSpace25.SpaceName = ""
+        GamSpace25.SpaceType = GamSpaceTypes.AHM
+        GamSpace25.TabIndex = 38
+        GamSpace25.UseTicks = 0L
+        GamSpace25.VoidTicks = 0L
+        ' 
+        ' GamSpace26
+        ' 
+        GamSpace26.BackColor = Color.LightCoral
+        GamSpace26.BorderStyle = BorderStyle.FixedSingle
+        GamSpace26.HighestNumberOfPersons = 0
+        GamSpace26.IsClosed = True
+        GamSpace26.IsReserved = False
+        GamSpace26.Location = New Point(740, 427)
+        GamSpace26.Name = "GamSpace26"
+        GamSpace26.NeedsCleaning = False
+        GamSpace26.Size = New Size(58, 113)
+        GamSpace26.SpaceName = ""
+        GamSpace26.SpaceType = GamSpaceTypes.AHM
+        GamSpace26.TabIndex = 38
+        GamSpace26.UseTicks = 0L
+        GamSpace26.VoidTicks = 0L
+        ' 
+        ' GamSpace27
+        ' 
+        GamSpace27.BackColor = Color.Tan
+        GamSpace27.BorderStyle = BorderStyle.FixedSingle
+        GamSpace27.HighestNumberOfPersons = 0
+        GamSpace27.IsClosed = True
+        GamSpace27.IsReserved = False
+        GamSpace27.Location = New Point(620, 689)
+        GamSpace27.Name = "GamSpace27"
+        GamSpace27.NeedsCleaning = False
+        GamSpace27.Size = New Size(146, 78)
+        GamSpace27.SpaceName = ""
+        GamSpace27.SpaceType = GamSpaceTypes.MHM
+        GamSpace27.TabIndex = 39
+        GamSpace27.UseTicks = 0L
+        GamSpace27.VoidTicks = 0L
+        ' 
         ' GAM_0_4_Tablet
         ' 
         AutoScaleDimensions = New SizeF(7F, 15F)
         AutoScaleMode = AutoScaleMode.Font
         BackColor = Color.White
-        ClientSize = New Size(1162, 1061)
+        ClientSize = New Size(1430, 905)
         Controls.Add(MyAudiologyReception)
         Name = "GAM_0_4_Tablet"
         Text = "GAM_0_4_Tablet"
@@ -569,4 +740,13 @@ Partial Class GAM_0_4_Tablet
     Friend WithEvents Label1 As Label
     Friend WithEvents VerticalWall2 As VerticalWall
     Friend WithEvents VerticalWall1 As VerticalWall
+    Friend WithEvents GamSpace22 As GamSpace
+    Friend WithEvents GamSpace21 As GamSpace
+    Friend WithEvents GamSpace12 As GamSpace
+    Friend WithEvents GamSpace2 As GamSpace
+    Friend WithEvents GamSpace23 As GamSpace
+    Friend WithEvents GamSpace25 As GamSpace
+    Friend WithEvents GamSpace26 As GamSpace
+    Friend WithEvents GamSpace24 As GamSpace
+    Friend WithEvents GamSpace27 As GamSpace
 End Class

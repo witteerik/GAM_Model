@@ -271,7 +271,14 @@ Public Class Modeller26A
         Dim AddedPatientsOpeningStage As Integer = 0
         Dim AddedPatientsMainStage As Integer = 0
 
-        Dim OpeningStagePatientCount As Integer = MyAudiologyReception.GetGamSpaces(GamSpaceTypes.AHM).Count
+        'We get the OpeningStagePatientCount as the number of open AHM rooms
+        Dim OpeningStagePatientCount As Integer = 0
+        Dim AllAHM_Rooms = MyAudiologyReception.GetGamSpaces(GamSpaceTypes.AHM)
+        For Each AHM_Room In AllAHM_Rooms
+            If AHM_Room.IsClosed = False Then
+                OpeningStagePatientCount += 1
+            End If
+        Next
 
         Do
 
